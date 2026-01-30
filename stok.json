@@ -1,14 +1,11 @@
 {
-  "settings": {
-    "rate": 10
-  },
   "products": {
     "https://qrto.org/en-unready": {
       "name": "Deneme",
       "price": 300,
       "size": "2.27",
       "weight": "2kg",
-      "stock": 86
+      "stock": 586
     }
   }
 }
