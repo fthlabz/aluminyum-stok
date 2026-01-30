@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alüminyum Stok (Pro)</title>
+    <title>Stok & Fiyat Patronu</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
@@ -14,37 +14,62 @@
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #eab308; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .hidden { display: none !important; }
+        /* Sayı giriş kutusundaki okları gizle */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden">
 
     <header class="bg-gray-800 p-3 shadow-md border-b border-gray-700 flex justify-between items-center z-20">
         <div class="flex items-center gap-2">
-            <i class="fa-solid fa-layer-group text-yellow-500"></i>
-            <span class="font-bold text-gray-200 text-sm">FTHLABZ STOK</span>
+            <i class="fa-solid fa-cube text-yellow-500"></i>
+            <span class="font-bold text-gray-200 text-sm tracking-wide">ALU-STOK</span>
         </div>
+        
+        <div id="status-box" class="bg-black/40 px-3 py-1 rounded text-xs text-gray-400">Hazır</div>
 
-        <div id="status-box" class="bg-black/40 px-3 py-1 rounded text-xs text-gray-400">
-            Hazır
-        </div>
-
-        <button onclick="changeRate()" class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-xs font-bold flex items-center gap-2 border border-gray-600">
-            <span id="market-rate-view" class="text-gray-300">%0</span>
-            <i class="fa-solid fa-gear"></i>
+        <button onclick="togglePriceMenu()" class="bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded text-xs font-bold text-white shadow-lg border border-indigo-500 flex items-center gap-2">
+            <i class="fa-solid fa-tags"></i> FİYAT GÜNCELLE
         </button>
     </header>
 
-    <div id="scan-page" class="flex-1 flex flex-col items-center justify-center p-4 relative">
+    <div id="price-menu" class="hidden absolute top-14 right-2 left-2 bg-gray-800 border border-gray-600 p-4 rounded-xl shadow-2xl z-50">
+        <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+            <h3 class="font-bold text-white"><i class="fa-solid fa-chart-line text-yellow-500"></i> Toplu Fiyat Değişimi</h3>
+            <button onclick="togglePriceMenu()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark fa-lg"></i></button>
+        </div>
+        
+        <p class="text-xs text-gray-400 mb-3">Dikkat: Bu işlem tüm ürünlerin fiyatını <u>kalıcı olarak</u> değiştirir!</p>
+
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <button onclick="applyBulkPrice(5)" class="bg-green-700/50 hover:bg-green-600 border border-green-600 text-white py-3 rounded-lg font-bold btn-active">
+                +%5 ZAM
+            </button>
+            <button onclick="applyBulkPrice(10)" class="bg-green-800/50 hover:bg-green-700 border border-green-700 text-white py-3 rounded-lg font-bold btn-active">
+                +%10 ZAM
+            </button>
+            <button onclick="applyBulkPrice(-5)" class="bg-red-700/50 hover:bg-red-600 border border-red-600 text-white py-3 rounded-lg font-bold btn-active">
+                -%5 İNDİRİM
+            </button>
+            <button onclick="applyBulkPrice(-10)" class="bg-red-800/50 hover:bg-red-700 border border-red-700 text-white py-3 rounded-lg font-bold btn-active">
+                -%10 İNDİRİM
+            </button>
+        </div>
+
+        <div class="flex gap-2">
+            <input type="number" id="custom-rate" placeholder="Özel Oran (Örn: 3)" class="bg-black text-white px-3 rounded border border-gray-600 w-full text-center outline-none">
+            <button onclick="applyCustomRate()" class="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded font-bold text-sm">UYGULA</button>
+        </div>
+    </div>
+
+    <div id="scan-page" class="flex-1 flex flex-col items-center justify-center p-4">
         <div class="relative w-full max-w-sm aspect-square bg-black rounded-2xl overflow-hidden shadow-2xl border-2 border-yellow-600 mb-6">
             <div id="reader" class="w-full h-full object-cover"></div>
             <div class="absolute inset-0 border-4 border-yellow-500/30 m-8 rounded-xl pointer-events-none"></div>
         </div>
-
-        <p class="text-gray-400 text-sm mb-6 text-center">QR Kodu okut veya NFC etiketi yaklaştır</p>
-
+        <p class="text-gray-400 text-sm mb-6 text-center">Ürün Barkodu / QR Tut</p>
         <button onclick="startNFC()" class="w-full max-w-sm bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg btn-active flex items-center justify-center gap-3">
-            <i class="fa-solid fa-wifi text-2xl"></i>
-            <span>NFC OKUT</span>
+            <i class="fa-solid fa-wifi text-2xl"></i> <span>NFC TARA</span>
         </button>
     </div>
 
@@ -55,173 +80,180 @@
         
         <div class="bg-gray-800 rounded-2xl p-5 shadow-xl border-l-4 border-yellow-500 relative mb-4">
             <span id="p-id" class="absolute top-3 right-3 text-[10px] text-gray-500 font-mono bg-black/50 px-2 py-1 rounded">ID: -</span>
-            
             <h1 id="p-name" class="text-2xl font-bold text-white mb-1 leading-tight">Ürün Yükleniyor...</h1>
             <div class="flex gap-3 text-xs text-gray-400 mb-4">
                 <span class="bg-gray-700/50 px-2 py-1 rounded"><i class="fa-solid fa-ruler"></i> <span id="p-size">-</span></span>
                 <span class="bg-gray-700/50 px-2 py-1 rounded"><i class="fa-solid fa-scale-balanced"></i> <span id="p-weight">-</span></span>
             </div>
-
+            
             <div class="grid grid-cols-2 gap-3">
                 <div class="bg-black/30 p-3 rounded-xl border border-gray-700">
-                    <div class="text-[10px] text-gray-400 uppercase tracking-wider">Satış Fiyatı</div>
+                    <div class="text-[10px] text-gray-400 uppercase">Birim Fiyat</div>
                     <div id="p-price" class="text-2xl font-bold text-green-400">0 TL</div>
                 </div>
                 <div class="bg-black/30 p-3 rounded-xl border border-gray-700 text-right">
-                    <div class="text-[10px] text-gray-400 uppercase tracking-wider">Stok Adedi</div>
-                    <div id="p-stock" class="text-3xl font-bold text-yellow-500">0</div>
+                    <div class="text-[10px] text-gray-400 uppercase">Stok Adedi</div>
+                    <div id="p-stock" class="text-4xl font-bold text-yellow-500">0</div>
                 </div>
             </div>
         </div>
 
-        <div class="mt-auto grid grid-cols-2 gap-3 pb-4">
-            <div class="flex flex-col gap-2">
-                <button onclick="updateStock(-1)" class="bg-red-600 py-5 rounded-xl font-bold text-2xl shadow-lg btn-active text-white border-b-4 border-red-800">
-                    <i class="fa-solid fa-minus"></i> 1
-                </button>
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="updateStock(-5)" class="bg-red-900/40 py-3 rounded-lg text-red-300 font-bold border border-red-900/50 btn-active">-5</button>
-                    <button onclick="updateStock(-10)" class="bg-red-900/40 py-3 rounded-lg text-red-300 font-bold border border-red-900/50 btn-active">-10</button>
-                </div>
-            </div>
+        <div class="mt-auto bg-gray-800 p-4 rounded-xl border border-gray-700">
+            <label class="text-gray-400 text-xs uppercase font-bold ml-1">İşlem Miktarı:</label>
+            
+            <input type="number" id="manual-qty" placeholder="Adet Girin" class="w-full bg-black text-white text-center text-4xl font-bold py-3 rounded-lg border-2 border-gray-600 focus:border-yellow-500 outline-none mb-4" inputmode="numeric">
 
-            <div class="flex flex-col gap-2">
-                <button onclick="updateStock(1)" class="bg-green-600 py-5 rounded-xl font-bold text-2xl shadow-lg btn-active text-white border-b-4 border-green-800">
-                    <i class="fa-solid fa-plus"></i> 1
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="processTransaction('out')" class="bg-red-600 hover:bg-red-700 py-4 rounded-xl font-bold text-xl shadow-lg btn-active text-white flex flex-col items-center">
+                    <i class="fa-solid fa-arrow-down mb-1"></i> ÇIKIŞ
                 </button>
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="updateStock(5)" class="bg-green-900/40 py-3 rounded-lg text-green-300 font-bold border border-green-900/50 btn-active">+5</button>
-                    <button onclick="updateStock(10)" class="bg-green-900/40 py-3 rounded-lg text-green-300 font-bold border border-green-900/50 btn-active">+10</button>
-                </div>
+
+                <button onclick="processTransaction('in')" class="bg-green-600 hover:bg-green-700 py-4 rounded-xl font-bold text-xl shadow-lg btn-active text-white flex flex-col items-center">
+                    <i class="fa-solid fa-arrow-up mb-1"></i> GİRİŞ
+                </button>
             </div>
         </div>
     </div>
 
     <script>
         // ================================================================
-        // 🔥 BURAYA DİKKAT: TOKEN PARÇALAMA (HİLE) ALANI
+        // 🔐 GÜVENLİK AYARI (TOKEN)
         // ================================================================
-        
-        const token_part_1 = "ghp_"; // Buraya dokunma!
-        
-        // AŞAĞIYA Token'ın "ghp_" den SONRAKİ kısmını yapıştır:
-        // Örnek: Eğer token "ghp_AbCdEf123" ise, buraya sadece "AbCdEf123" yaz.
+        const token_part_1 = "ghp_"; 
+        // 👇 TOKEN'IN GERİ KALANINI BURAYA YAPIŞTIR:
         const token_part_2 = "9gT7hgXXkyWE01zwNzYOFY621lkSIv4HIyLr"; 
 
         const CONFIG = {
-            USER: "fthlabz",           // GitHub Kullanıcı Adın
-            REPO: "aluminyum-stok",    // Repo Adın
-            FILE: "stok.json",         // Dosya Adı
-            TOKEN: token_part_1 + token_part_2 // Otomatik birleşir
+            USER: "fthlabz",           
+            REPO: "aluminyum-stok",    
+            FILE: "stok.json",         
+            TOKEN: token_part_1 + token_part_2 
         };
-
         // ================================================================
 
-        let db = { settings: { rate: 0 }, products: {} };
-        let fileSha = null; // Dosya versiyon takibi
+        let db = { products: {} }; // Artık 'settings: rate' tutmuyoruz
+        let fileSha = null;
         let currentId = null;
         let scanner = null;
 
-        // --- SİSTEM BAŞLANGICI ---
         window.onload = async () => {
-            await syncFromCloud(); // Verileri çek
-            startScanner(); // Kamerayı aç
+            await syncFromCloud();
+            startScanner();
         };
 
-        // --- GITHUB SENKRONİZASYON (Cloud) ---
+        // --- GITHUB ---
         async function syncFromCloud() {
-            uiLoading(true, "Veriler alınıyor...");
+            uiLoading(true, "Yükleniyor...");
             const url = `https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents/${CONFIG.FILE}`;
-            
             try {
                 const res = await fetch(url, {
                     headers: { 'Authorization': `token ${CONFIG.TOKEN}`, 'Accept': 'application/vnd.github.v3+json' },
-                    cache: "no-store" // Her zaman taze veri çek
+                    cache: "no-store"
                 });
-
-                if (!res.ok) throw new Error("Bağlantı Hatası");
-                
+                if (!res.ok) throw new Error("Hata");
                 const data = await res.json();
-                fileSha = data.sha; // Kayıt için gerekli parmak izi
+                fileSha = data.sha;
+                db = JSON.parse(decodeURIComponent(escape(window.atob(data.content))));
                 
-                // Türkçe karakter düzeltmesi yaparak içeriği çöz
-                const content = decodeURIComponent(escape(window.atob(data.content)));
-                db = JSON.parse(content);
+                // Eski yapıdan kalan rate varsa temizle
+                if(db.settings) delete db.settings;
                 
                 uiLoading(false, "Hazır");
-                updateRateUI();
-                
             } catch (err) {
                 console.error(err);
-                // Eğer dosya yoksa (404) veya hata varsa
                 uiLoading(false, "Veri Yok / Hata");
-                // İlk kurulumda boş db ile devam et (Kritik değilse)
             }
         }
 
         async function saveToCloud() {
             uiLoading(true, "Kaydediliyor...");
             const url = `https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents/${CONFIG.FILE}`;
-            
-            // Türkçe karakter düzeltmesi yaparak içeriği şifrele
             const contentEncoded = window.btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
-
-            const body = {
-                message: "Stok Hareketi: " + new Date().toLocaleTimeString(),
-                content: contentEncoded,
-                sha: fileSha // Hangi versiyonun üzerine yazıyoruz?
-            };
 
             try {
                 const res = await fetch(url, {
                     method: 'PUT',
                     headers: { 'Authorization': `token ${CONFIG.TOKEN}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
+                    body: JSON.stringify({
+                        message: "Fiyat/Stok Güncelleme",
+                        content: contentEncoded,
+                        sha: fileSha
+                    })
                 });
-
                 if (res.ok) {
                     const data = await res.json();
-                    fileSha = data.content.sha; // Yeni parmak izini al
+                    fileSha = data.content.sha;
                     uiLoading(false, "Kaydedildi ✅");
-                    setTimeout(() => uiLoading(false, "Hazır"), 2000);
-                } else {
-                    throw new Error("Kayıt Başarısız");
-                }
+                } else throw new Error();
             } catch (err) {
-                alert("Kayıt yapılamadı! İnterneti kontrol et.");
-                uiLoading(false, "Hata ❌");
+                uiLoading(false, "Kayıt Hatası ❌");
             }
         }
 
-        // --- ARAYÜZ GÜNCELLEMELERİ ---
+        // --- TOPLU FİYAT GÜNCELLEME (KALICI) ---
+        function togglePriceMenu() {
+            document.getElementById('price-menu').classList.toggle('hidden');
+        }
+
+        async function applyBulkPrice(percent) {
+            if(!confirm(`Tüm ürünlerin fiyatına %${percent} oranında değişim uygulanacak.\nBu işlem kalıcıdır. Onaylıyor musun?`)) return;
+
+            togglePriceMenu();
+            uiLoading(true, "Fiyatlar İşleniyor...");
+
+            // Tüm ürünleri döngüye al ve fiyatı güncelle
+            let count = 0;
+            for (let key in db.products) {
+                let p = db.products[key];
+                // Formül: Eski Fiyat * (1 + Yüzde/100)
+                let newPrice = p.price * (1 + percent / 100);
+                p.price = parseFloat(newPrice.toFixed(2)); // Virgülden sonra 2 hane
+                count++;
+            }
+
+            await saveToCloud();
+            alert(`${count} ürünün fiyatı güncellendi!`);
+            
+            // Eğer ürün sayfasındaysak onu da güncelle
+            if(currentId) showProductPage();
+        }
+        
+        function applyCustomRate() {
+            const val = parseFloat(document.getElementById('custom-rate').value);
+            if(val) applyBulkPrice(val);
+        }
+
+        // --- STOK İŞLEMİ (MANUEL) ---
+        async function processTransaction(type) {
+            const inputEl = document.getElementById('manual-qty');
+            let amount = parseInt(inputEl.value);
+
+            if (!amount || amount <= 0) {
+                alert("Lütfen geçerli bir sayı girin.");
+                return;
+            }
+
+            if (type === 'out') amount = amount * -1;
+            db.products[currentId].stock += amount;
+            
+            showProductPage(); // Ekranı tazele
+            inputEl.value = ""; // Kutuyu temizle
+            inputEl.focus();
+
+            await saveToCloud();
+        }
+
+        // --- ARAYÜZ ---
         function uiLoading(isLoading, text) {
             const el = document.getElementById('status-box');
-            if(isLoading) {
-                el.innerHTML = `<div class="loader"></div> ${text}`;
-                el.className = "bg-yellow-900/50 px-3 py-1 rounded text-xs text-yellow-200 border border-yellow-700 flex items-center gap-2";
-            } else {
-                el.innerText = text;
-                if(text.includes("Hata")) el.className = "bg-red-900/50 px-3 py-1 rounded text-xs text-red-200 border border-red-700";
-                else if(text.includes("Kaydedildi")) el.className = "bg-green-900/50 px-3 py-1 rounded text-xs text-green-200 border border-green-700";
-                else el.className = "bg-black/40 px-3 py-1 rounded text-xs text-gray-400";
-            }
+            el.innerHTML = isLoading ? `<div class="loader"></div> ${text}` : text;
         }
 
-        function updateRateUI() {
-            const r = db.settings.rate;
-            const el = document.getElementById('market-rate-view');
-            el.innerText = (r > 0 ? "+" : "") + r + "%";
-            el.className = r > 0 ? "text-green-400 font-bold" : (r < 0 ? "text-red-400 font-bold" : "text-gray-400 font-bold");
-            
-            // Eğer ürün sayfası açıksa fiyatı da güncelle
-            if(currentId) renderPrice();
-        }
-
-        // --- İŞ MANTIĞI ---
+        // --- ÜRÜN İŞLEMLERİ ---
         function findProduct(code) {
             currentId = code;
             if (!db.products[code]) {
-                if(confirm("Bu ürün kayıtlı değil. Ekleyelim mi?")) createProduct(code);
+                if(confirm("Yeni Ürün Ekle?")) createProduct(code);
                 return;
             }
             showProductPage();
@@ -230,63 +262,28 @@
         async function createProduct(code) {
             const name = prompt("Ürün Adı:");
             if(!name) return;
-            const price = prompt("Taban Fiyat (TL):");
-            const size = prompt("Boy / Ebat:") || "-";
-            const weight = prompt("Ağırlık:") || "-";
-
-            db.products[code] = {
-                name: name,
-                price: parseFloat(price) || 0,
-                size: size,
-                weight: weight,
-                stock: 0
-            };
-            
-            await saveToCloud(); // Yeni ürünü hemen buluta yaz
+            const price = parseFloat(prompt("Fiyat:")) || 0;
+            db.products[code] = { name, price, size: prompt("Boy:")||"-", weight: prompt("Kilo:")||"-", stock: 0 };
+            await saveToCloud();
             showProductPage();
         }
 
         function showProductPage() {
-            if(!currentId) return;
-            const p = db.products[currentId];
-            
-            // Ekran değiştir
+            stopScanner();
             document.getElementById('scan-page').classList.add('hidden');
             document.getElementById('product-page').classList.remove('hidden');
-            if(scanner) scanner.stop(); // Kamerayı durdur
-
-            // Verileri bas
-            document.getElementById('p-id').innerText = "ID: " + currentId;
+            
+            const p = db.products[currentId];
+            document.getElementById('p-id').innerText = currentId;
             document.getElementById('p-name').innerText = p.name;
             document.getElementById('p-size').innerText = p.size;
             document.getElementById('p-weight').innerText = p.weight;
             
-            renderPrice();
-        }
-
-        function renderPrice() {
-            const p = db.products[currentId];
-            const rate = db.settings.rate;
-            // Formül: Taban Fiyat + (Taban * Yüzde / 100)
-            const final = p.price + (p.price * rate / 100);
-            
-            document.getElementById('p-price').innerText = final.toFixed(2) + " TL";
+            // Artık direkt fiyatı gösteriyoruz (Hesaplama yok)
+            document.getElementById('p-price').innerText = p.price.toFixed(2) + " TL";
             document.getElementById('p-stock').innerText = p.stock;
-        }
-
-        async function updateStock(amount) {
-            db.products[currentId].stock += amount;
-            renderPrice(); // Ekranı anlık güncelle (bekletme)
-            await saveToCloud(); // Arkada kaydet
-        }
-
-        async function changeRate() {
-            const newRate = prompt("Yeni Piyasa Yüzdesi (%):", db.settings.rate);
-            if(newRate !== null) {
-                db.settings.rate = parseFloat(newRate);
-                updateRateUI();
-                await saveToCloud(); // Ayarı kaydet
-            }
+            
+            document.getElementById('manual-qty').value = "";
         }
 
         function goHome() {
@@ -294,14 +291,21 @@
             document.getElementById('scan-page').classList.remove('hidden');
             currentId = null;
             startScanner();
-            syncFromCloud(); // Dönüşte veriyi tazele (Başkası işlem yaptıysa görelim)
+            syncFromCloud();
         }
 
-        // --- DONANIM (Kamera & NFC) ---
+        // --- KAMERA & NFC ---
         function startScanner() {
+            if(scanner) return;
             scanner = new Html5Qrcode("reader");
             scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, findProduct)
-            .catch(err => console.log("Kamera izni yok veya hata", err));
+            .catch(err => console.log("Kamera Hatası:", err));
+        }
+
+        function stopScanner() {
+            if (scanner) {
+                scanner.stop().then(() => { scanner.clear(); scanner = null; }).catch(err => {});
+            }
         }
 
         async function startNFC() {
@@ -309,15 +313,13 @@
                 try {
                     const ndef = new NDEFReader();
                     await ndef.scan();
-                    alert("NFC Aktif! Telefona dokundur.");
+                    alert("NFC Bekleniyor...");
                     ndef.onreading = event => {
                         const decoder = new TextDecoder();
-                        for (const record of event.message.records) {
-                            findProduct(decoder.decode(record.data));
-                        }
+                        for (const record of event.message.records) findProduct(decoder.decode(record.data));
                     };
                 } catch (error) { alert("NFC Hatası: " + error); }
-            } else { alert("NFC bu cihazda desteklenmiyor."); }
+            } else { alert("NFC Yok"); }
         }
     </script>
 </body>
