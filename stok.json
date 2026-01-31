@@ -19,6 +19,14 @@
       ],
       "length": 2.79,
       "size": "2.79 cm"
+    },
+    "Vg": {
+      "name": "Fth",
+      "price": 320,
+      "length": 270,
+      "size": "270 cm",
+      "stock": 0,
+      "offcuts": []
     }
   }
 }
