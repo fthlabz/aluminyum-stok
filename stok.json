@@ -11,8 +11,10 @@
     "http://www.instagram.com": {
       "name": "Balık",
       "stock": 0,
-      "price": 0,
-      "offcuts": []
+      "price": 150,
+      "offcuts": [],
+      "length": 2.79,
+      "size": "2.79 cm"
     }
   }
 }
