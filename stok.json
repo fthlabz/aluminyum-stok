@@ -2,14 +2,14 @@
   "products": {
     "https://qrto.org/en-unready": {
       "name": "Zürafa",
-      "price": 400.21,
+      "price": 440.23,
       "size": "2.27 cm",
       "weight": "2 kg",
       "stock": 1520
     },
     "qrto.org/unready": {
       "name": "Kardemir",
-      "price": 509.25,
+      "price": 560.18,
       "size": "1.45 cm",
       "weight": "1 kg",
       "stock": 550
