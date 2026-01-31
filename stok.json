@@ -38,6 +38,14 @@
       "size": "270 cm",
       "stock": 0,
       "offcuts": []
+    },
+    "URUN-379933-22387": {
+      "name": "Deneme",
+      "price": 320,
+      "length": 600,
+      "size": "600 cm",
+      "stock": 0,
+      "offcuts": []
     }
   }
 }
