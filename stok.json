@@ -7,6 +7,12 @@
       "weight": "0",
       "stock": 9,
       "offcuts": []
+    },
+    "http://www.instagram.com": {
+      "name": "Balık",
+      "stock": 0,
+      "price": 0,
+      "offcuts": []
     }
   }
 }
