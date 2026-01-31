@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Stok Master (Liste & Paylaş)</title>
+    <title>Stok Master v5.5 Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
@@ -12,7 +12,7 @@
         body { 
             background-color: #0f172a; 
             color: white; 
-            font-family: sans-serif; 
+            font-family: 'Inter', sans-serif; 
             touch-action: manipulation;
             height: 100dvh;
             display: flex;
@@ -20,12 +20,10 @@
             overflow: hidden;
         }
         .btn-active:active { transform: scale(0.95); transition: 0.1s; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #eab308; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .hidden { display: none !important; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
-        /* Modal animasyonu */
+        /* Modal Animasyonları */
         .modal-enter { animation: fadeIn 0.2s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
@@ -35,7 +33,7 @@
     <header class="bg-gray-800 p-3 shadow-md border-b border-gray-700 flex justify-between items-center z-20 shrink-0 gap-2">
         <div class="flex items-center gap-2 overflow-hidden">
             <i class="fa-solid fa-cube text-yellow-500"></i>
-            <span class="font-bold text-gray-200 text-sm tracking-wide truncate">FTHLABZ v5</span>
+            <span class="font-bold text-gray-200 text-sm tracking-wide truncate">FTHLABZ v5.5</span>
         </div>
         
         <div class="flex gap-2">
@@ -49,7 +47,7 @@
         </div>
     </header>
 
-    <div id="status-box" class="absolute top-16 left-1/2 transform -translate-x-1/2 bg-black/80 px-4 py-1 rounded-full text-xs text-gray-300 z-50 pointer-events-none transition-opacity duration-500 opacity-0">
+    <div id="status-box" class="absolute top-16 left-1/2 transform -translate-x-1/2 bg-black/80 px-4 py-2 rounded-full text-sm font-bold text-gray-300 z-50 pointer-events-none transition-opacity duration-500 opacity-0 border border-gray-600">
         Hazır
     </div>
 
@@ -104,6 +102,7 @@
         <button onclick="startNFC()" class="w-full max-w-sm bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg btn-active flex items-center justify-center gap-3">
             <i class="fa-solid fa-wifi text-2xl"></i> <span>NFC TARA</span>
         </button>
+        <p class="text-gray-500 text-xs mt-4">Kamera veya NFC ile ürün okutun.</p>
     </div>
 
     <div id="product-page" class="hidden flex-1 flex flex-col bg-gray-900 p-4 overflow-y-auto pb-32">
@@ -131,8 +130,30 @@
             </div>
         </div>
 
-        <div class="mt-4 bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg">
-            <label class="text-gray-400 text-xs uppercase font-bold ml-1">İşlem Miktarı:</label>
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-600 shadow-lg relative overflow-hidden group mb-4">
+            <div class="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition">
+                <i class="fa-solid fa-scissors text-6xl text-red-500"></i>
+            </div>
+            
+            <div class="flex items-center justify-between mb-3 relative z-10">
+                <span class="text-gray-400 text-xs font-bold uppercase tracking-wider"><i class="fa-solid fa-ruler-combined text-blue-400"></i> MEVCUT BOY</span>
+                <span id="live-length" class="text-3xl font-bold text-blue-400 font-mono tracking-tighter">0 <span class="text-sm">cm</span></span>
+            </div>
+
+            <div class="flex gap-2 items-center relative z-10">
+                <div class="relative w-full">
+                    <input type="number" id="cut-input" placeholder="Kesilen (cm)" class="w-full bg-black text-white py-3 pl-4 pr-3 rounded-lg border border-gray-600 focus:border-red-500 outline-none font-bold placeholder-gray-600 transition-colors">
+                </div>
+                
+                <button onclick="processCut()" class="bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-lg font-bold shadow-lg active:scale-95 transition flex items-center gap-2 border-b-4 border-red-800">
+                    <i class="fa-solid fa-scissors"></i> KES
+                </button>
+            </div>
+            <p class="text-[10px] text-gray-500 mt-2 text-center relative z-10">*Stok adedi düşmez, sadece boy kısalır.</p>
+        </div>
+
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg">
+            <label class="text-gray-400 text-xs uppercase font-bold ml-1">Stok İşlemi:</label>
             <input type="number" id="manual-qty" placeholder="Adet Girin" class="w-full bg-black text-white text-center text-4xl font-bold py-4 rounded-lg border-2 border-gray-600 focus:border-yellow-500 outline-none mb-4 appearance-none" inputmode="numeric">
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="requestTransaction('out')" class="bg-red-600 hover:bg-red-700 py-4 rounded-xl font-bold text-xl shadow-lg btn-active text-white flex flex-col items-center border-b-4 border-red-800">
@@ -161,7 +182,7 @@
 
     <script>
         // ================================================================
-        // 🔐 GÜVENLİK AYARI
+        // 🔐 GÜVENLİK VE AYARLAR
         // ================================================================
         const token_part_1 = "ghp_"; 
         // 👇 TOKEN'IN GERİ KALANINI BURAYA YAPIŞTIR:
@@ -182,12 +203,13 @@
         let pendingAction = { type: null, amount: 0 };
         let itemToDelete = null;
 
+        // Başlangıç
         window.onload = async () => {
             await syncFromCloud();
             startScanner();
         };
 
-        // --- GITHUB ---
+        // --- GITHUB SENKRONİZASYON ---
         async function syncFromCloud() {
             showStatus("Veri Çekiliyor...", true);
             const url = `https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents/${CONFIG.FILE}`;
@@ -198,10 +220,10 @@
                 fileSha = data.sha;
                 db = JSON.parse(decodeURIComponent(escape(window.atob(data.content))));
                 if(db.settings) delete db.settings;
-                showStatus("Hazır", false);
+                showStatus("Hazır 🟢", false);
             } catch (err) {
                 console.error(err);
-                showStatus("Veri Yok", false);
+                showStatus("Çevrimdışı 🔴", false);
             }
         }
 
@@ -219,7 +241,7 @@
             } catch (err) { showStatus("Kayıt Hatası ❌", false); }
         }
 
-        // --- LİSTE VE YÖNETİM ---
+        // --- SAYFA YÖNETİMİ ---
         function showListPage() {
             stopScanner();
             document.querySelectorAll('[id$="-page"]').forEach(el => el.classList.add('hidden'));
@@ -227,6 +249,34 @@
             renderList();
         }
 
+        function showProductPage() {
+            stopScanner();
+            document.querySelectorAll('[id$="-page"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('product-page').classList.remove('hidden');
+            
+            const p = db.products[currentId];
+            document.getElementById('p-id').innerText = currentId;
+            document.getElementById('p-name').innerText = p.name;
+            document.getElementById('p-size').innerText = p.size; 
+            document.getElementById('p-weight').innerText = p.weight;
+            document.getElementById('p-price').innerText = p.price.toFixed(2) + " TL";
+            document.getElementById('p-stock').innerText = p.stock;
+
+            // ✂️ KESİM GÖSTERGESİ
+            // Eğer veritabanında 'length' varsa onu kullan, yoksa 'size' değerini sayıya çevir
+            let displayLength = p.length || parseFloat(p.size) || 0;
+            document.getElementById('live-length').innerHTML = displayLength + " <span class='text-sm'>cm</span>";
+        }
+
+        function goHome() {
+            document.querySelectorAll('[id$="-page"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('scan-page').classList.remove('hidden');
+            currentId = null;
+            startScanner();
+            syncFromCloud(); // Eve dönünce veriyi tazele
+        }
+
+        // --- LİSTELEME ---
         function renderList(filter = "") {
             const container = document.getElementById('list-container');
             container.innerHTML = "";
@@ -240,7 +290,6 @@
 
             keys.forEach(key => {
                 const p = db.products[key];
-                // Arama filtresi
                 if (p.name.toLowerCase().includes(filter) || key.toLowerCase().includes(filter)) {
                     const item = document.createElement('div');
                     item.className = "bg-gray-800 p-4 rounded-xl border border-gray-700 flex flex-col gap-2";
@@ -266,49 +315,41 @@
             });
         }
 
-        // --- PAYLAŞMA (WHATSAPP) ---
-        function shareProduct(id) {
-            const p = db.products[id];
-            const text = `📦 *${p.name}*\n💰 Fiyat: ${p.price} TL\n📊 Stok: ${p.stock} Adet\n📏 Ebat: ${p.size}\n⚖️ Kilo: ${p.weight}\n🆔 Kod: ${id}`;
-            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-            window.open(url, '_blank');
-        }
+        // --- ✂️ KESİM MANTIĞI (CANLI KESİM) ---
+        async function processCut() {
+            const cutAmount = parseFloat(document.getElementById('cut-input').value);
+            // Mevcut boyu bul (veritabanından)
+            let currentLength = parseFloat(db.products[currentId].length || db.products[currentId].size) || 0;
 
-        // --- DÜZENLEME ---
-        async function editProduct(id) {
-            const p = db.products[id];
-            const newName = prompt("Ürün Adı:", p.name);
-            if(newName) {
-                p.name = newName;
-                p.price = parseFloat(prompt("Fiyat:", p.price)) || p.price;
-                p.size = prompt("Boy:", p.size);
-                p.weight = prompt("Kilo:", p.weight);
-                await saveToCloud();
-                renderList(document.getElementById('search-box').value); // Listeyi yenile
+            if (!cutAmount || cutAmount <= 0) { alert("Kaç cm keseceğini yazmadın!"); return; }
+            
+            // Eğer boy hiç girilmemişse sor
+            if (currentLength === 0 || isNaN(currentLength)) {
+                let manual = prompt("Bu ürünün net boyu (CM) sisteme girilmemiş.\nLütfen tam boyunu yaz:", "600");
+                if(!manual) return;
+                currentLength = parseFloat(manual);
+            }
+
+            if (cutAmount >= currentLength) {
+                alert(`HATA: ${currentLength} cm üründen ${cutAmount} cm kesemezsin!`);
+                return;
+            }
+
+            const newLength = currentLength - cutAmount;
+
+            if(confirm(`✂️ KESİM ONAYI:\n\nMevcut: ${currentLength} cm\nKesilen: -${cutAmount} cm\n----------------\nKALAN: ${newLength} cm\n\nOnaylıyor musun?`)) {
+                // Veritabanını güncelle
+                db.products[currentId].length = newLength; 
+                db.products[currentId].size = newLength + " cm"; // Listede görünen metni de güncelle
+                
+                showProductPage(); // Ekranı yenile
+                document.getElementById('cut-input').value = ""; // Kutuyu temizle
+                await saveToCloud(); // Kaydet
+                showStatus("Kesim Yapıldı ✂️", false);
             }
         }
 
-        // --- SİLME ---
-        function askDelete(id) {
-            itemToDelete = id;
-            document.getElementById('delete-modal').classList.remove('hidden');
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('delete-modal').classList.add('hidden');
-            itemToDelete = null;
-        }
-
-        async function confirmDelete() {
-            if(itemToDelete && db.products[itemToDelete]) {
-                delete db.products[itemToDelete]; // Listeden sil
-                closeDeleteModal();
-                renderList(document.getElementById('search-box').value); // Listeyi güncelle
-                await saveToCloud(); // Buluta kaydet
-            }
-        }
-
-        // --- STOK İŞLEMİ ---
+        // --- STOK İŞLEMLERİ ---
         function requestTransaction(type) {
             const inputEl = document.getElementById('manual-qty');
             let amount = parseInt(inputEl.value);
@@ -336,7 +377,41 @@
 
         function closeModal() { document.getElementById('confirm-modal').classList.add('hidden'); }
 
-        // --- GENEL ---
+        // --- DİĞER FONKSİYONLAR ---
+        function shareProduct(id) {
+            const p = db.products[id];
+            const text = `📦 *${p.name}*\n💰 Fiyat: ${p.price} TL\n📊 Stok: ${p.stock} Adet\n📏 Ebat: ${p.size}\n🆔 Kod: ${id}`;
+            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+
+        async function editProduct(id) {
+            const p = db.products[id];
+            const newName = prompt("Ürün Adı:", p.name);
+            if(newName) {
+                p.name = newName;
+                p.price = parseFloat(prompt("Fiyat:", p.price)) || p.price;
+                p.size = prompt("Boy:", p.size);
+                p.weight = prompt("Kilo:", p.weight);
+                await saveToCloud();
+                renderList(document.getElementById('search-box').value);
+            }
+        }
+
+        function askDelete(id) {
+            itemToDelete = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+        function closeDeleteModal() { document.getElementById('delete-modal').classList.add('hidden'); itemToDelete = null; }
+        async function confirmDelete() {
+            if(itemToDelete && db.products[itemToDelete]) {
+                delete db.products[itemToDelete];
+                closeDeleteModal();
+                renderList(document.getElementById('search-box').value);
+                await saveToCloud();
+            }
+        }
+
         function showStatus(text, isLoading) {
             const el = document.getElementById('status-box');
             el.innerText = text;
@@ -345,7 +420,6 @@
         }
 
         function togglePriceMenu() { document.getElementById('price-menu').classList.toggle('hidden'); }
-
         async function applyBulkPrice(percent) {
             if(!confirm(`DİKKAT: Tüm fiyatlar %${percent} değişecek. Emin misin?`)) return;
             togglePriceMenu();
@@ -362,7 +436,7 @@
         function findProduct(code) {
             currentId = code;
             if (!db.products[code]) {
-                if(confirm("Yeni Ürün Ekle?")) createProduct(code);
+                if(confirm("Yeni Ürün Ekle?\nID: " + code)) createProduct(code);
                 return;
             }
             showProductPage();
@@ -372,32 +446,22 @@
             const name = prompt("Ürün Adı:");
             if(!name) return;
             const price = parseFloat(prompt("Fiyat:")) || 0;
-            db.products[code] = { name, price, size: prompt("Boy:")||"-", weight: prompt("Kilo:")||"-", stock: 0 };
+            // Yeni üründe length'i de sorabilirsin istersen, şimdilik size'a atıyoruz
+            const size = prompt("Boy (Örn: 600 cm):") || "-";
+            
+            db.products[code] = { 
+                name, 
+                price, 
+                size: size,
+                length: parseFloat(size) || 0, // Sayısal boyu otomatik ayıkla
+                weight: prompt("Kilo:")||"-", 
+                stock: 0 
+            };
             await saveToCloud();
             showProductPage();
         }
 
-        function showProductPage() {
-            stopScanner();
-            document.querySelectorAll('[id$="-page"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById('product-page').classList.remove('hidden');
-            const p = db.products[currentId];
-            document.getElementById('p-id').innerText = currentId;
-            document.getElementById('p-name').innerText = p.name;
-            document.getElementById('p-size').innerText = p.size;
-            document.getElementById('p-weight').innerText = p.weight;
-            document.getElementById('p-price').innerText = p.price.toFixed(2) + " TL";
-            document.getElementById('p-stock').innerText = p.stock;
-        }
-
-        function goHome() {
-            document.querySelectorAll('[id$="-page"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById('scan-page').classList.remove('hidden');
-            currentId = null;
-            startScanner();
-            syncFromCloud();
-        }
-
+        // --- KAMERA / NFC ---
         function startScanner() {
             if(scanner) return;
             scanner = new Html5Qrcode("reader");
