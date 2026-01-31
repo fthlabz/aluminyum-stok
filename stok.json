@@ -44,8 +44,10 @@
       "price": 320,
       "length": 600,
       "size": "600 cm",
-      "stock": 1500,
-      "offcuts": []
+      "stock": 1499,
+      "offcuts": [
+        470
+      ]
     }
   }
 }
