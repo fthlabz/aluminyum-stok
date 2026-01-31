@@ -2,7 +2,7 @@
   "products": {
     "https://qrto.org/en-unready": {
       "name": "Zürafa",
-      "price": 405.79,
+      "price": 385.5,
       "size": "2.70",
       "weight": "0",
       "stock": 9,
@@ -11,7 +11,7 @@
     "http://www.instagram.com": {
       "name": "Balık",
       "stock": 97,
-      "price": 156.75,
+      "price": 148.91,
       "offcuts": [
         1.59,
         1.59,
@@ -22,7 +22,7 @@
     },
     "Vg": {
       "name": "Fth",
-      "price": 334.4,
+      "price": 317.68,
       "length": 270,
       "size": "270 cm",
       "stock": 8,
@@ -33,7 +33,7 @@
     },
     "https://fthlabz.github.io/aluminyum-stok/?id=URUN-379933-22387": {
       "name": "Yeni qr ürün",
-      "price": 334.4,
+      "price": 317.68,
       "length": 270,
       "size": "270 cm",
       "stock": 0,
@@ -41,7 +41,7 @@
     },
     "URUN-379933-22387": {
       "name": "Deneme",
-      "price": 334.4,
+      "price": 317.68,
       "length": 600,
       "size": "600 cm",
       "stock": 1499,
