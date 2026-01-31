@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Stok Master v8.0 (Final Fix)</title>
+    <title>Stok Master v9.0 (Secure)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
@@ -15,139 +15,162 @@
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .modal-enter { animation: fadeIn 0.2s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        
+        /* Login Ekranı için Blur */
+        .blur-bg { filter: blur(5px); pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <header class="bg-gray-800 p-3 shadow-md border-b border-gray-700 flex justify-between items-center z-20 shrink-0 gap-2">
-        <div class="flex items-center gap-2 overflow-hidden">
-            <i class="fa-solid fa-cube text-yellow-500"></i>
-            <span class="font-bold text-gray-200 text-sm tracking-wide truncate">FTHLABZ v8.0</span>
+    <div id="login-screen" class="fixed inset-0 bg-gray-900 z-[9999] flex flex-col items-center justify-center p-6">
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-700 w-full max-w-sm text-center">
+            <i class="fa-solid fa-lock text-5xl text-yellow-500 mb-4"></i>
+            <h2 class="text-2xl font-bold text-white mb-2">Sistem Kilitli</h2>
+            <p class="text-gray-400 text-sm mb-6">Yetkili personel şifresi giriniz.</p>
+            
+            <input type="tel" id="login-pin" maxlength="4" placeholder="****" class="w-full bg-black text-white text-center text-3xl font-bold py-4 rounded-xl border-2 border-gray-600 focus:border-yellow-500 outline-none mb-4 tracking-[10px]">
+            
+            <button onclick="checkLogin()" class="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold py-4 rounded-xl text-lg shadow-lg">GİRİŞ YAP</button>
         </div>
+        <p class="text-gray-600 text-xs mt-8">FTHLABZ Security System v9.0</p>
+    </div>
+
+    <div id="app-content" class="flex flex-col h-full hidden">
         
-        <div class="flex gap-2">
-            <button onclick="showListPage()" class="bg-gray-700 px-3 py-1.5 rounded text-xs font-bold text-white border border-gray-600 flex items-center gap-2">
-                <i class="fa-solid fa-list-ul"></i> LİSTE
-            </button>
-            <button onclick="togglePriceMenu()" class="bg-indigo-600 px-3 py-1.5 rounded text-xs font-bold text-white shadow-lg border border-indigo-500 flex items-center gap-2">
-                <i class="fa-solid fa-tags"></i> FİYAT
-            </button>
-        </div>
-    </header>
-
-    <div id="status-box" class="absolute top-16 left-1/2 transform -translate-x-1/2 bg-green-600 px-4 py-2 rounded-full text-sm font-bold text-white z-50 transition-opacity duration-500 opacity-0 shadow-lg border border-green-400">
-        İşlem Başarılı
-    </div>
-
-    <div id="confirm-modal" class="hidden fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-gray-800 border border-gray-600 w-full max-w-sm rounded-2xl p-6 shadow-2xl modal-enter text-center">
-            <h3 class="text-xl font-bold text-white mb-4">İşlem Onayı</h3>
-            <p class="text-gray-300 text-lg mb-6">
-                <span id="confirm-amount" class="font-bold text-white text-2xl">0</span> Adet 
-                <span id="confirm-type" class="font-bold text-yellow-400">GİRİŞ</span> 
-                yapılacak.
-            </p>
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="closeModal()" class="bg-gray-600 text-white py-3 rounded-xl font-bold">İPTAL</button>
-                <button onclick="confirmTransaction()" class="bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg">ONAYLA</button>
+        <header class="bg-gray-800 p-3 shadow-md border-b border-gray-700 flex justify-between items-center z-20 shrink-0 gap-2">
+            <div class="flex items-center gap-2 overflow-hidden">
+                <i class="fa-solid fa-cube text-yellow-500"></i>
+                <span class="font-bold text-gray-200 text-sm tracking-wide truncate">FTHLABZ v9.0</span>
             </div>
-        </div>
-    </div>
-
-    <div id="price-menu" class="hidden absolute top-14 right-2 left-2 bg-gray-800 border border-gray-600 p-4 rounded-xl shadow-2xl z-50">
-        <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-            <h3 class="font-bold text-white">Toplu Fiyat Değişimi</h3>
-            <button onclick="togglePriceMenu()" class="text-gray-400"><i class="fa-solid fa-xmark fa-lg"></i></button>
-        </div>
-        <div class="grid grid-cols-2 gap-3 mb-4">
-            <button onclick="applyBulkPrice(5)" class="bg-green-700/50 border border-green-600 text-white py-3 rounded-lg font-bold btn-active">+%5 ZAM</button>
-            <button onclick="applyBulkPrice(10)" class="bg-green-800/50 border border-green-700 text-white py-3 rounded-lg font-bold btn-active">+%10 ZAM</button>
-            <button onclick="applyBulkPrice(-5)" class="bg-red-700/50 border border-red-600 text-white py-3 rounded-lg font-bold btn-active">-%5 İNDİRİM</button>
-            <button onclick="applyBulkPrice(-10)" class="bg-red-800/50 border border-red-700 text-white py-3 rounded-lg font-bold btn-active">-%10 İNDİRİM</button>
-        </div>
-    </div>
-
-    <div id="scan-page" class="flex-1 flex flex-col items-center justify-center p-4 overflow-y-auto">
-        <div class="relative w-full max-w-sm aspect-square bg-black rounded-2xl overflow-hidden shadow-2xl border-2 border-yellow-600 mb-6 shrink-0">
-            <div id="reader" class="w-full h-full object-cover"></div>
-            <div class="absolute inset-0 border-4 border-yellow-500/30 m-8 rounded-xl pointer-events-none"></div>
-        </div>
-        <button onclick="startNFC()" class="w-full max-w-sm bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg btn-active flex items-center justify-center gap-3">
-            <i class="fa-solid fa-wifi text-2xl"></i> <span>NFC TARA</span>
-        </button>
-        <p class="text-gray-500 text-xs mt-4">Kamera veya NFC ile ürün okutun.</p>
-    </div>
-
-    <div id="product-page" class="hidden flex-1 flex flex-col bg-gray-900 p-4 overflow-y-auto pb-32">
-        <button onclick="goHome()" class="text-gray-400 mb-2 flex items-center gap-2 text-sm w-fit p-2">
-            <i class="fa-solid fa-arrow-left"></i> Geri Dön
-        </button>
-        
-        <div class="bg-gray-800 rounded-2xl p-5 shadow-xl border-l-4 border-yellow-500 relative mb-4 shrink-0">
-            <span id="p-id" class="absolute top-3 right-3 text-[10px] text-gray-500 font-mono bg-black/50 px-2 py-1 rounded">ID: -</span>
-            <h1 id="p-name" class="text-2xl font-bold text-white mb-1 leading-tight">...</h1>
-            <div class="grid grid-cols-2 gap-3 mt-4">
-                <div class="bg-black/30 p-3 rounded-xl border border-gray-700">
-                    <div class="text-[10px] text-gray-400 uppercase">Fiyat</div>
-                    <div id="p-price" class="text-2xl font-bold text-green-400">0 TL</div>
-                </div>
-                <div class="bg-black/30 p-3 rounded-xl border border-gray-700 text-right">
-                    <div class="text-[10px] text-gray-400 uppercase">Tam Boy Stok</div>
-                    <div id="p-stock" class="text-4xl font-bold text-yellow-500">0</div>
-                </div>
-            </div>
-            <div class="mt-3 text-right">
-                <span class="text-[10px] text-gray-400 uppercase mr-2">MEVCUT BOY:</span>
-                <span id="live-length" class="text-2xl font-bold text-blue-400">0</span>
-            </div>
-        </div>
-
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-600 shadow-lg mb-4">
-            <div class="text-xs text-gray-400 font-bold uppercase mb-2">
-                <i class="fa-solid fa-scissors"></i> Parça Kes / Ayır
-            </div>
+            
             <div class="flex gap-2">
-                <input type="number" step="any" id="cut-input" placeholder="Kesilen (CM yazın)" class="w-full bg-black text-white py-3 px-4 rounded-lg border border-gray-600 focus:border-red-500 outline-none font-bold text-lg" style="z-index: 50;">
-                <button onclick="processCut()" class="bg-red-600 text-white px-4 rounded-lg font-bold shadow-lg border-b-4 border-red-800 active:scale-95 whitespace-nowrap" style="z-index: 50;">
-                    KES & AYIR
+                <button onclick="showListPage()" class="bg-gray-700 px-3 py-1.5 rounded text-xs font-bold text-white border border-gray-600 flex items-center gap-2">
+                    <i class="fa-solid fa-list-ul"></i> LİSTE
+                </button>
+                <button onclick="togglePriceMenu()" class="bg-indigo-600 px-3 py-1.5 rounded text-xs font-bold text-white shadow-lg border border-indigo-500 flex items-center gap-2">
+                    <i class="fa-solid fa-tags"></i> FİYAT
                 </button>
             </div>
-            <p class="text-[10px] text-gray-500 mt-2">*Ana stoktan 1 düşer, kalan parçaya eklenir.</p>
+        </header>
+
+        <div id="status-box" class="absolute top-16 left-1/2 transform -translate-x-1/2 bg-green-600 px-4 py-2 rounded-full text-sm font-bold text-white z-50 transition-opacity duration-500 opacity-0 shadow-lg border border-green-400">
+            İşlem Başarılı
         </div>
 
-        <div id="offcut-container" class="bg-gray-800 p-4 rounded-xl border border-gray-600 shadow-lg hidden mb-4">
-            <h3 class="text-xs text-gray-400 font-bold uppercase mb-3 border-b border-gray-600 pb-2 flex justify-between items-center">
-                <span><i class="fa-solid fa-layer-group text-blue-400"></i> PARÇA DEPOSU</span>
-                <span class="text-[10px] text-gray-500">Kalanlar</span>
-            </h3>
-            <div id="offcut-list" class="space-y-2"></div>
-        </div>
-
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg">
-            <label class="text-gray-400 text-xs uppercase font-bold ml-1">Ana Stok İşlemi:</label>
-            <input type="number" id="manual-qty" placeholder="Adet Girin" class="w-full bg-black text-white text-center text-4xl font-bold py-4 rounded-lg border-2 border-gray-600 focus:border-yellow-500 outline-none mb-4 appearance-none" inputmode="numeric">
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="requestTransaction('out')" class="bg-red-600 hover:bg-red-700 py-4 rounded-xl font-bold text-xl shadow-lg btn-active text-white flex flex-col items-center border-b-4 border-red-800">
-                    <i class="fa-solid fa-arrow-down mb-1"></i> ÇIKIŞ
-                </button>
-                <button onclick="requestTransaction('in')" class="bg-green-600 hover:bg-green-700 py-4 rounded-xl font-bold text-xl shadow-lg btn-active text-white flex flex-col items-center border-b-4 border-green-800">
-                    <i class="fa-solid fa-arrow-up mb-1"></i> GİRİŞ
-                </button>
+        <div id="confirm-modal" class="hidden fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-gray-800 border border-gray-600 w-full max-w-sm rounded-2xl p-6 shadow-2xl modal-enter text-center">
+                <h3 class="text-xl font-bold text-white mb-4">İşlem Onayı</h3>
+                <p class="text-gray-300 text-lg mb-6">
+                    <span id="confirm-amount" class="font-bold text-white text-2xl">0</span> Adet 
+                    <span id="confirm-type" class="font-bold text-yellow-400">GİRİŞ</span> 
+                    yapılacak.
+                </p>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="closeModal()" class="bg-gray-600 text-white py-3 rounded-xl font-bold">İPTAL</button>
+                    <button onclick="confirmTransaction()" class="bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg">ONAYLA</button>
+                </div>
             </div>
         </div>
-        <div class="h-20"></div>
-    </div>
 
-    <div id="list-page" class="hidden flex-1 flex flex-col bg-gray-900 p-4 overflow-hidden">
-        <div class="flex items-center gap-2 mb-4">
-            <button onclick="goHome()" class="bg-gray-800 p-2 rounded text-gray-400"><i class="fa-solid fa-arrow-left"></i></button>
-            <input type="text" oninput="renderList(this.value)" placeholder="Ürün Ara..." class="w-full bg-black text-white px-4 py-2 rounded-lg border border-gray-700 outline-none focus:border-yellow-500">
+        <div id="price-menu" class="hidden absolute top-14 right-2 left-2 bg-gray-800 border border-gray-600 p-4 rounded-xl shadow-2xl z-50">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+                <h3 class="font-bold text-white">Toplu Fiyat Değişimi</h3>
+                <button onclick="togglePriceMenu()" class="text-gray-400"><i class="fa-solid fa-xmark fa-lg"></i></button>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <button onclick="applyBulkPrice(5)" class="bg-green-700/50 border border-green-600 text-white py-3 rounded-lg font-bold btn-active">+%5 ZAM</button>
+                <button onclick="applyBulkPrice(10)" class="bg-green-800/50 border border-green-700 text-white py-3 rounded-lg font-bold btn-active">+%10 ZAM</button>
+                <button onclick="applyBulkPrice(-5)" class="bg-red-700/50 border border-red-600 text-white py-3 rounded-lg font-bold btn-active">-%5 İNDİRİM</button>
+                <button onclick="applyBulkPrice(-10)" class="bg-red-800/50 border border-red-700 text-white py-3 rounded-lg font-bold btn-active">-%10 İNDİRİM</button>
+            </div>
         </div>
-        <div id="list-container" class="flex-1 overflow-y-auto space-y-3 pb-20"></div>
-    </div>
 
-    <script>
-        // --- 🔐 AYARLAR ---
+        <div id="scan-page" class="flex-1 flex flex-col items-center justify-center p-4 overflow-y-auto">
+            <div class="relative w-full max-w-sm aspect-square bg-black rounded-2xl overflow-hidden shadow-2xl border-2 border-yellow-600 mb-6 shrink-0">
+                <div id="reader" class="w-full h-full object-cover"></div>
+                <div class="absolute inset-0 border-4 border-yellow-500/30 m-8 rounded-xl pointer-events-none"></div>
+            </div>
+            <button onclick="startNFC()" class="w-full max-w-sm bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg btn-active flex items-center justify-center gap-3">
+                <i class="fa-solid fa-wifi text-2xl"></i> <span>NFC TARA</span>
+            </button>
+            <p class="text-gray-500 text-xs mt-4">Kamera veya NFC ile ürün okutun.</p>
+        </div>
+
+        <div id="product-page" class="hidden flex-1 flex flex-col bg-gray-900 p-4 overflow-y-auto pb-32">
+            <button onclick="goHome()" class="text-gray-400 mb-2 flex items-center gap-2 text-sm w-fit p-2">
+                <i class="fa-solid fa-arrow-left"></i> Geri Dön
+            </button>
+            
+            <div class="bg-gray-800 rounded-2xl p-5 shadow-xl border-l-4 border-yellow-500 relative mb-4 shrink-0">
+                <div class="flex justify-between items-start mb-2">
+                    <div id="p-id-badge" class="text-[10px] text-gray-500 font-mono bg-black/50 px-2 py-1 rounded max-w-[200px] truncate">
+                        ID: ...
+                    </div>
+                </div>
+
+                <h1 id="p-name" class="text-2xl font-bold text-white mb-2 leading-tight break-words">...</h1>
+                
+                <div class="grid grid-cols-2 gap-3 mt-2">
+                    <div class="bg-black/30 p-3 rounded-xl border border-gray-700">
+                        <div class="text-[10px] text-gray-400 uppercase">Fiyat</div>
+                        <div id="p-price" class="text-2xl font-bold text-green-400">0 TL</div>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-xl border border-gray-700 text-right">
+                        <div class="text-[10px] text-gray-400 uppercase">Tam Boy Stok</div>
+                        <div id="p-stock" class="text-4xl font-bold text-yellow-500">0</div>
+                    </div>
+                </div>
+                <div class="mt-3 text-right">
+                    <span class="text-[10px] text-gray-400 uppercase mr-2">MEVCUT BOY:</span>
+                    <span id="live-length" class="text-2xl font-bold text-blue-400">0</span>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-600 shadow-lg mb-4">
+                <div class="text-xs text-gray-400 font-bold uppercase mb-2"><i class="fa-solid fa-scissors"></i> Parça Kes / Ayır</div>
+                <div class="flex gap-2">
+                    <input type="number" step="any" id="cut-input" placeholder="Kesilen (CM)" class="w-full bg-black text-white py-3 px-4 rounded-lg border border-gray-600 focus:border-red-500 outline-none font-bold text-lg">
+                    <button onclick="processCut()" class="bg-red-600 text-white px-4 rounded-lg font-bold shadow-lg border-b-4 border-red-800 active:scale-95 whitespace-nowrap">KES & AYIR</button>
+                </div>
+                <p class="text-[10px] text-gray-500 mt-2">*Ana stoktan 1 düşer, kalan parçaya eklenir.</p>
+            </div>
+
+            <div id="offcut-container" class="bg-gray-800 p-4 rounded-xl border border-gray-600 shadow-lg hidden mb-4">
+                <h3 class="text-xs text-gray-400 font-bold uppercase mb-3 border-b border-gray-600 pb-2 flex justify-between items-center">
+                    <span><i class="fa-solid fa-layer-group text-blue-400"></i> PARÇA DEPOSU</span>
+                    <span class="text-[10px] text-gray-500">Kalanlar</span>
+                </h3>
+                <div id="offcut-list" class="space-y-2"></div>
+            </div>
+
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg">
+                <label class="text-gray-400 text-xs uppercase font-bold ml-1">Ana Stok İşlemi:</label>
+                <input type="number" id="manual-qty" placeholder="Adet Girin" class="w-full bg-black text-white text-center text-4xl font-bold py-4 rounded-lg border-2 border-gray-600 focus:border-yellow-500 outline-none mb-4 appearance-none" inputmode="numeric">
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="requestTransaction('out')" class="bg-red-600 hover:bg-red-700 py-4 rounded-xl font-bold text-xl shadow-lg btn-active text-white flex flex-col items-center border-b-4 border-red-800">
+                        <i class="fa-solid fa-arrow-down mb-1"></i> ÇIKIŞ
+                    </button>
+                    <button onclick="requestTransaction('in')" class="bg-green-600 hover:bg-green-700 py-4 rounded-xl font-bold text-xl shadow-lg btn-active text-white flex flex-col items-center border-b-4 border-green-800">
+                        <i class="fa-solid fa-arrow-up mb-1"></i> GİRİŞ
+                    </button>
+                </div>
+            </div>
+            <div class="h-20"></div>
+        </div>
+
+        <div id="list-page" class="hidden flex-1 flex flex-col bg-gray-900 p-4 overflow-hidden">
+            <div class="flex items-center gap-2 mb-4">
+                <button onclick="goHome()" class="bg-gray-800 p-2 rounded text-gray-400"><i class="fa-solid fa-arrow-left"></i></button>
+                <input type="text" oninput="renderList(this.value)" placeholder="Ürün Ara..." class="w-full bg-black text-white px-4 py-2 rounded-lg border border-gray-700 outline-none focus:border-yellow-500">
+            </div>
+            <div id="list-container" class="flex-1 overflow-y-auto space-y-3 pb-20"></div>
+        </div>
+    
+    </div> <script>
+        // --- 🔐 GÜVENLİK AYARLARI ---
+        const APP_PIN = "1453"; // 🔥 ŞİFREYİ BURADAN DEĞİŞTİR (Müşteriler bilemez)
+        
+        // --- GITHUB AYARLARI ---
         const token_part_1 = "ghp_"; 
         // 👇 TOKEN'I BURAYA YAPIŞTIR:
         const token_part_2 = "9gT7hgXXkyWE01zwNzYOFY621lkSIv4HIyLr"; 
@@ -159,8 +182,43 @@
         let scanner = null;
         let fileSha = null;
         let pendingAction = { type: null, amount: 0 };
+        let isLoggedIn = false;
 
-        window.onload = async () => { await syncFromCloud(); startScanner(); };
+        // BAŞLANGIÇTA ŞİFRE SOR
+        window.onload = async () => {
+            // Kayıtlı oturum var mı bak (İstersen bunu kaldırıp her seferinde sorabilirsin)
+            if(sessionStorage.getItem("auth") === "true") {
+                unlockApp();
+            } else {
+                document.getElementById('login-pin').focus();
+            }
+        };
+
+        function checkLogin() {
+            const input = document.getElementById('login-pin').value;
+            if(input === APP_PIN) {
+                unlockApp();
+            } else {
+                alert("Hatalı Şifre!");
+                document.getElementById('login-pin').value = "";
+            }
+        }
+
+        async function unlockApp() {
+            isLoggedIn = true;
+            sessionStorage.setItem("auth", "true"); // Sayfa yenilenince hatırla (Tarayıcı kapanınca gider)
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-content').classList.remove('hidden');
+            await syncFromCloud(); 
+            startScanner();
+            
+            // Eğer URL'de ID varsa (QR ile açıldıysa) direkt o ürüne git
+            const urlParams = new URLSearchParams(window.location.search);
+            const qrId = urlParams.get('id');
+            if(qrId) {
+                findProduct(qrId);
+            }
+        }
 
         // --- BULUT ---
         async function syncFromCloud() {
@@ -170,7 +228,7 @@
                 const data = await res.json();
                 fileSha = data.sha;
                 db = JSON.parse(decodeURIComponent(escape(window.atob(data.content))));
-                showStatus("Hazır 🟢", false);
+                showStatus("Sistem Hazır 🟢", false);
             } catch (e) { showStatus("Bağlantı Yok 🔴", false); }
         }
         
@@ -193,19 +251,27 @@
             document.getElementById('product-page').classList.remove('hidden');
             
             const p = db.products[currentId];
-            document.getElementById('p-id').innerText = currentId;
+            
+            // 🔥 ID KISALTMA VE GİZLEME (UI DÜZELTME)
+            // Ekranda sadece ID'nin son parçasını gösteriyoruz (URUN-XXX)
+            // Linkin tamamı görünmez, böylece ismin üstüne binmez.
+            let displayId = currentId;
+            if(displayId.length > 20) {
+                 // Eğer link ise, sadece sonunu göster
+                 // Örn: https://.../id=URUN-123 -> URUN-123
+                 if(displayId.includes("id=")) displayId = displayId.split("id=")[1];
+                 else if(displayId.includes("/")) displayId = displayId.split("/").pop();
+            }
+            document.getElementById('p-id-badge').innerText = "ID: " + displayId;
+
             document.getElementById('p-name').innerText = p.name;
             document.getElementById('p-price').innerText = (p.price || 0).toFixed(2) + " TL";
             document.getElementById('p-stock').innerText = p.stock;
             
-            // Boy Göstergesi (Matematik Hatası Fix)
             let len = parseFloat(p.length || p.size) || 0;
-            // .toFixed(2) ile virgülden sonra max 2 hane göster (1.50 gibi)
-            // parseFloat ile gereksiz sıfırları temizle (1.50 -> 1.5)
             let displayLen = parseFloat(len.toFixed(2)); 
             document.getElementById('live-length').innerHTML = displayLen + " <span class='text-sm text-gray-500'>cm</span>";
 
-            // PARÇA DEPOSU
             const container = document.getElementById('offcut-container');
             const list = document.getElementById('offcut-list');
             list.innerHTML = "";
@@ -214,7 +280,6 @@
                 p.offcuts.forEach((cm, idx) => {
                     const row = document.createElement('div');
                     row.className = "flex justify-between items-center bg-black/40 p-3 rounded border border-gray-600";
-                    // Parça boyunu da düzgün formatla
                     let niceCm = parseFloat(parseFloat(cm).toFixed(2));
                     row.innerHTML = `
                         <div class="flex items-center gap-2"><i class="fa-solid fa-puzzle-piece text-gray-500"></i><span class="text-blue-300 font-bold text-lg">${niceCm} cm</span></div>
@@ -225,29 +290,22 @@
             } else { container.classList.add('hidden'); }
         }
 
-        // --- ✂️ KESİM MANTIĞI (FIXED) ---
+        // --- KESİM ---
         async function processCut() {
             const p = db.products[currentId];
             const cutVal = parseFloat(document.getElementById('cut-input').value);
-            
-            // Veritabanındaki boyu al
             let len = parseFloat(p.length || p.size) || 0;
 
             if (!cutVal) return alert("Kesilecek miktarı girmedin!");
-            
-            // Eğer boy hiç yoksa sor
             if (len === 0) { 
                 let manual = prompt("Bu ürünün TAM BOYU kaç CM? (Örn: 270)", "600"); 
                 if(!manual) return; 
                 len = parseFloat(manual);
-                p.length = len; // Kaydet
+                p.length = len; 
             }
-
             if (cutVal >= len) return alert("HATA: Boydan daha fazlasını kesemezsin!");
 
-            // Matematik Hatası Önleyici (1.50000002 -> 1.50)
             const remaining = parseFloat((len - cutVal).toFixed(2));
-
             if (p.stock > 0) {
                 if(confirm(`✂️ KESİM ONAYI\n\nAna stoktan 1 düşülecek.\nKalan ${remaining} cm 'Parça Deposu'na eklenecek.\n\nOnaylıyor musun?`)) {
                     p.stock--; 
@@ -260,50 +318,24 @@
             } else { alert("Ana stokta kesecek ürün kalmadı!"); }
         }
 
-        // --- DÜZENLEME (GERİ GELDİ) ---
         async function editProduct(id) {
             const p = db.products[id];
-            
-            const n = prompt("Ürün Adı:", p.name);
-            if (!n) return;
-            
+            const n = prompt("Ürün Adı:", p.name); if (!n) return;
             const pr = prompt("Fiyat (TL):", p.price);
             const l = prompt("Tam Boy (CM cinsinden):", p.length || p.size || 0);
-
-            p.name = n;
-            p.price = parseFloat(pr) || 0;
-            p.length = parseFloat(l) || 0;
-            p.size = p.length + " cm"; // Görünen metni de güncelle
-
+            p.name = n; p.price = parseFloat(pr) || 0; p.length = parseFloat(l) || 0; p.size = p.length + " cm";
             await saveToCloud();
-            // Eğer o an o ürün açıksa sayfayı yenile, yoksa listeyi yenile
-            if(currentId === id) showProductPage();
-            else renderList(document.getElementById('list-search').value || "");
+            if(currentId === id) showProductPage(); else renderList(document.getElementById('list-search')?.value || "");
         }
 
-        // --- YENİ ÜRÜN (GELİŞMİŞ) ---
         async function createProduct(code) {
-            // Zincirleme sorular (Boş geçilemez)
-            let name = prompt("Yeni Ürün Adı:");
-            if(!name) return;
-
+            let name = prompt("Yeni Ürün Adı:"); if(!name) return;
             let price = prompt("Birim Fiyatı (TL):", "0");
             let length = prompt("Ürün Boyu (CM cinsinden, Örn: 600):", "600");
-            
-            db.products[code] = { 
-                name: name, 
-                price: parseFloat(price) || 0,
-                length: parseFloat(length) || 0,
-                size: length + " cm",
-                stock: 0, 
-                offcuts: [] 
-            };
-            
-            await saveToCloud();
-            showProductPage();
+            db.products[code] = { name: name, price: parseFloat(price) || 0, length: parseFloat(length) || 0, size: length + " cm", stock: 0, offcuts: [] };
+            await saveToCloud(); showProductPage();
         }
 
-        // --- STOK & PARÇA ---
         async function sellOffcut(index) {
             if(confirm("Bu parçayı siliyor musun?")) {
                 db.products[currentId].offcuts.splice(index, 1);
@@ -332,22 +364,16 @@
         }
         function closeModal() { document.getElementById('confirm-modal').classList.add('hidden'); }
 
-        // --- FİYAT MENÜSÜ ---
         function togglePriceMenu() { document.getElementById('price-menu').classList.toggle('hidden'); }
         async function applyBulkPrice(pct) {
             if(!confirm(`Tüm fiyatlar %${pct} değişecek?`)) return;
             togglePriceMenu(); showStatus("İşleniyor...");
-            for (let k in db.products) {
-                let p = db.products[k];
-                p.price = parseFloat((p.price * (1 + pct/100)).toFixed(2));
-            }
+            for (let k in db.products) { let p = db.products[k]; p.price = parseFloat((p.price * (1 + pct/100)).toFixed(2)); }
             await saveToCloud(); if(currentId) showProductPage();
         }
 
-        // --- NAVİGASYON ---
         function showStatus(msg, load) {
-            const el = document.getElementById('status-box');
-            el.innerText = msg; el.style.opacity = "1";
+            const el = document.getElementById('status-box'); el.innerText = msg; el.style.opacity = "1";
             if(!load) setTimeout(() => el.style.opacity = "0", 2000);
         }
         function goHome() { 
@@ -380,16 +406,20 @@
                                 <div class='text-yellow-500 font-bold'>${p.stock}</div>
                                 <div class='text-green-400 text-xs'>${p.price} TL</div>
                             </div>
-                            <button onclick="editProduct('${k}')" class="bg-gray-700 p-2 rounded text-blue-300 hover:bg-gray-600">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
+                            <button onclick="editProduct('${k}')" class="bg-gray-700 p-2 rounded text-blue-300 hover:bg-gray-600"><i class="fa-solid fa-pen"></i></button>
                         </div>
                     `;
                     c.appendChild(d);
                 }
             });
         }
+
         function findProduct(code) {
+            // QR link temizleme (Linkse ID'yi ayıkla)
+            if (code.includes("id=")) {
+                code = code.split("id=")[1];
+            }
+
             currentId = code;
             if (!db.products[code]) {
                 if(confirm("Yeni Ürün Ekle?\nID: " + code)) {
@@ -397,6 +427,7 @@
                 } return;
             } showProductPage();
         }
+
         function startScanner() { if(!scanner) { scanner = new Html5Qrcode("reader"); scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, findProduct); } }
         function stopScanner() { if(scanner) scanner.stop().then(() => { scanner.clear(); scanner=null; }); }
         
