@@ -23,9 +23,9 @@
     },
     "URUN-214462-81352": {
       "name": "10 kg Enes zeytin",
-      "price": 0,
+      "price": 4000,
       "stock": 495,
-      "note": null,
+      "note": "",
       "category": "GENEL"
     }
   }
