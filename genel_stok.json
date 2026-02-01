@@ -23,9 +23,9 @@
     },
     "URUN-214462-81352": {
       "name": "10 kg Enes zeytin",
-      "price": 3990,
+      "price": 0,
       "stock": 495,
-      "note": "261.290 brüt",
+      "note": null,
       "category": "GENEL"
     }
   }
