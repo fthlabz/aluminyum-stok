@@ -13,6 +13,13 @@
       "stock": 100,
       "note": "Açıklama",
       "category": "GENEL"
+    },
+    "URUN-214462-65183": {
+      "name": "Kdjjjd",
+      "price": 444,
+      "stock": 0,
+      "note": "Standart",
+      "category": "GENEL"
     }
   }
 }
