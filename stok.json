@@ -34,10 +34,12 @@
       "extraValue": "Olur öyle"
     },
     "URUN-214462-81352": {
-      "offcuts": [],
+      "offcuts": [
+        10
+      ],
       "name": "Rıfkı zeytin",
       "price": 4750,
-      "stock": 100,
+      "stock": 99,
       "size": 18,
       "unit": "KG",
       "extraLabel": "Skt",
