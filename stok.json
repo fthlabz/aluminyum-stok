@@ -9,6 +9,16 @@
       "unit": "M²",
       "extraLabel": "Cinsi",
       "extraValue": "Yün-polyester"
+    },
+    "URUN-214462-49400": {
+      "offcuts": [],
+      "name": "U profil çubuk",
+      "price": 170,
+      "stock": 100,
+      "size": 2.7,
+      "unit": "M",
+      "extraLabel": "Cinsi",
+      "extraValue": "U profil"
     }
   }
 }
