@@ -11,10 +11,12 @@
       "extraValue": "Yün-polyester"
     },
     "URUN-214462-49400": {
-      "offcuts": [],
+      "offcuts": [
+        200
+      ],
       "name": "U profil çubuk",
       "price": 170,
-      "stock": 100,
+      "stock": 99,
       "size": 270,
       "unit": "CM",
       "extraLabel": "Cinsi",
