@@ -17,8 +17,8 @@
       "name": "U profil çubuk",
       "price": 170,
       "stock": 99,
-      "size": 270,
-      "unit": "CM",
+      "size": 0,
+      "unit": "M",
       "extraLabel": "Cinsi",
       "extraValue": "U profil"
     }
