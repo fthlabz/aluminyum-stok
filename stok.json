@@ -19,7 +19,7 @@
     "URUN-214462-67904": {
       "name": "Çamaşır makünası",
       "price": 5650,
-      "unit": "4m2",
+      "unit": "m2",
       "stock": 50,
       "length": 600,
       "offcuts": []
