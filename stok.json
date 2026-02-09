@@ -4,7 +4,7 @@
       "offcuts": [],
       "name": "Saray halı",
       "price": 5750,
-      "stock": 100,
+      "stock": 99,
       "size": 6,
       "unit": "M²",
       "extraLabel": "Cinsi",
@@ -20,5 +20,17 @@
       "extraLabel": "Cinsi",
       "extraValue": "U profil"
     }
+  },
+  "dailyStats": {
+    "date": "9.02.2026",
+    "ciro": 5750,
+    "log": [
+      {
+        "name": "Saray halı",
+        "qty": 1,
+        "total": 5750,
+        "staff": "Ahmet"
+      }
+    ]
   }
 }
