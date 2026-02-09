@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Stok Master v9.6 (Business)</title>
+    <title>Stok Master v9.7 (Final)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
@@ -29,13 +29,52 @@
         </div>
     </div>
 
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-gray-800 border border-gray-600 w-full max-w-sm rounded-2xl p-6 shadow-2xl modal-enter">
+            <h3 class="text-xl font-bold text-white mb-4 border-b border-gray-700 pb-2">Ürün Düzenle / Stok Ekle</h3>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs text-gray-400 uppercase">Ürün Adı</label>
+                    <input type="text" id="edit-name" class="w-full bg-black p-3 rounded border border-gray-600 text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-xs text-gray-400 uppercase">Fiyat (TL)</label>
+                        <input type="number" id="edit-price" class="w-full bg-black p-3 rounded border border-gray-600 text-white">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 uppercase">Birim</label>
+                        <select id="edit-unit" class="w-full bg-black p-3 rounded border border-gray-600 text-white h-[50px]">
+                            <option value="adt">ADET</option>
+                            <option value="m">METRE</option>
+                            <option value="m2">M²</option>
+                            <option value="cm">CM</option>
+                            <option value="kg">KG</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 uppercase">Mevcut Stok</label>
+                    <input type="number" id="edit-stock" class="w-full bg-black p-3 rounded border border-gray-600 text-yellow-500 font-bold text-xl">
+                    <p class="text-[10px] text-gray-500 mt-1">*Stok eklemek için sayıyı arttırın.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mt-6">
+                <button onclick="closeEditModal()" class="bg-gray-600 text-white py-3 rounded-xl font-bold">İPTAL</button>
+                <button onclick="saveEditProduct()" class="bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg">KAYDET</button>
+            </div>
+        </div>
+    </div>
+
     <div id="app-content" class="flex flex-col h-full hidden">
         
         <header class="bg-gray-800 p-3 shadow-md border-b border-gray-700 flex justify-between items-center z-20 shrink-0 gap-2">
             <div class="flex items-center gap-2 overflow-hidden">
                 <i class="fa-solid fa-cube text-yellow-500"></i>
                 <div class="flex flex-col">
-                    <span class="font-bold text-gray-200 text-xs tracking-wide truncate">FTHLABZ v9.6</span>
+                    <span class="font-bold text-gray-200 text-xs tracking-wide truncate">FTHLABZ v9.7</span>
                     <span class="text-[10px] text-green-400 font-mono" id="header-ciro">Ciro: 0₺</span>
                 </div>
             </div>
@@ -49,11 +88,11 @@
 
         <div id="confirm-modal" class="hidden fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
             <div class="bg-gray-800 border border-gray-600 w-full max-w-sm rounded-2xl p-6 shadow-2xl modal-enter text-center">
-                <h3 class="text-xl font-bold text-white mb-4">İşlem Onayı</h3>
-                <p class="text-gray-300 text-lg mb-6"><span id="confirm-amount" class="font-bold text-white text-2xl">0</span> Adet <span id="confirm-type" class="font-bold text-yellow-400">GİRİŞ</span> yapılacak.</p>
+                <h3 class="text-xl font-bold text-white mb-4">Satış Onayı</h3>
+                <p class="text-gray-300 text-lg mb-6"><span id="confirm-amount" class="font-bold text-white text-2xl">0</span> <span id="confirm-unit-disp">Adet</span> Çıkış Yapılacak.</p>
                 <div class="grid grid-cols-2 gap-4">
                     <button onclick="closeModal()" class="bg-gray-600 text-white py-3 rounded-xl font-bold">İPTAL</button>
-                    <button onclick="confirmTransaction()" class="bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg">ONAYLA</button>
+                    <button onclick="confirmTransaction()" class="bg-red-600 text-white py-3 rounded-xl font-bold shadow-lg">SATIŞI ONAYLA</button>
                 </div>
             </div>
         </div>
@@ -105,7 +144,10 @@
         <div id="product-page" class="hidden flex-1 flex flex-col bg-gray-900 p-4 overflow-y-auto pb-32">
             <div class="flex justify-between items-center mb-2">
                 <button onclick="goHome()" class="text-gray-400 flex items-center gap-2 text-sm w-fit p-2"><i class="fa-solid fa-arrow-left"></i> Kapat</button>
-                <button onclick="shareProductWhatsapp()" class="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold"><i class="fa-brands fa-whatsapp"></i> Paylaş</button>
+                <div class="flex gap-2">
+                    <button onclick="openEditModal()" class="bg-gray-700 text-white px-3 py-1 rounded-full text-xs font-bold border border-gray-600"><i class="fa-solid fa-pen"></i> DÜZENLE</button>
+                    <button onclick="shareProductWhatsapp()" class="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold"><i class="fa-brands fa-whatsapp"></i></button>
+                </div>
             </div>
             
             <div class="bg-gray-800 rounded-2xl p-5 shadow-xl border-l-4 border-yellow-500 relative mb-4 shrink-0">
@@ -115,9 +157,8 @@
                 <h1 id="p-name" class="text-2xl font-bold text-white mb-2 leading-tight break-words">...</h1>
                 <div class="grid grid-cols-2 gap-3 mt-2">
                     <div class="bg-black/30 p-3 rounded-xl border border-gray-700 relative">
-                        <div class="text-[10px] text-gray-400 uppercase">Fiyat</div>
-                        <input type="text" id="p-price-edit" oninput="formatCurrencyInput(this)" class="bg-transparent text-2xl font-bold text-green-400 w-full outline-none" value="0">
-                        <div class="text-[10px] text-gray-500 absolute top-1 right-2">Düzenle</div>
+                        <div class="text-[10px] text-gray-400 uppercase">Birim Fiyat</div>
+                        <div id="p-price-disp" class="text-2xl font-bold text-green-400">0₺</div>
                     </div>
                     <div class="bg-black/30 p-3 rounded-xl border border-gray-700 text-right">
                         <div class="text-[10px] text-gray-400 uppercase">Stok</div>
@@ -125,8 +166,8 @@
                     </div>
                 </div>
                 <div class="mt-3 text-right">
-                    <span class="text-[10px] text-gray-400 uppercase mr-2">MEVCUT BOY/BİRİM:</span>
-                    <span id="live-length" class="text-2xl font-bold text-blue-400">0</span>
+                    <span class="text-[10px] text-gray-400 uppercase mr-2">TANIMLI BİRİM:</span>
+                    <span id="p-unit-disp" class="text-xl font-bold text-blue-400 uppercase">ADET</span>
                 </div>
             </div>
 
@@ -136,17 +177,11 @@
                     <span id="cut-preview" class="text-blue-300 italic normal-case">0 CM</span>
                 </div>
                 <div class="flex gap-2">
-                    <input type="number" step="any" id="cut-input" oninput="updateCutPreview()" placeholder="Miktar" class="flex-1 bg-black text-white py-3 px-4 rounded-lg border border-gray-600 focus:border-red-500 outline-none font-bold text-lg">
-                    <select id="cut-unit" onchange="updateCutPreview()" class="bg-gray-700 text-white rounded-lg px-2 text-sm font-bold border border-gray-600 outline-none">
-                        <option value="cm">CM</option>
-                        <option value="mm">MM</option>
-                        <option value="m">METRE</option>
-                        <option value="m2">M²</option>
-                        <option value="adt">ADET</option>
-                    </select>
-                    <button onclick="processCut()" class="bg-red-600 text-white px-4 rounded-lg font-bold shadow-lg border-b-4 border-red-800 active:scale-95 whitespace-nowrap">KES</button>
+                    <input type="number" step="any" id="cut-input" oninput="updateCutPreview()" placeholder="Kesilen" class="flex-1 bg-black text-white py-3 px-4 rounded-lg border border-gray-600 focus:border-red-500 outline-none font-bold text-lg">
+                    <div class="flex items-center justify-center bg-gray-700 px-3 rounded text-sm font-bold text-gray-300">CM</div>
+                    <button onclick="processCut()" class="bg-gray-600 text-white px-4 rounded-lg font-bold shadow-lg border-b-4 border-gray-800 active:scale-95 whitespace-nowrap">KES</button>
                 </div>
-                <p class="text-[10px] text-gray-500 mt-2">*Ana stoktan 1 düşer, kalanı ayırır.</p>
+                <p class="text-[10px] text-gray-500 mt-2">*Bu özellik stoktan 1 düşer, kalanı ayırır.</p>
             </div>
 
             <div id="offcut-container" class="bg-gray-800 p-4 rounded-xl border border-gray-600 shadow-lg hidden mb-4">
@@ -157,16 +192,14 @@
             </div>
 
             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg">
-                <label class="text-gray-400 text-xs uppercase font-bold ml-1">İşlem Yap:</label>
+                <label class="text-gray-400 text-xs uppercase font-bold ml-1">Hızlı Satış:</label>
                 <div class="relative">
-                    <input type="number" id="manual-qty" oninput="updateStockPreview()" placeholder="Adet" class="w-full bg-black text-white text-center text-4xl font-bold py-4 rounded-lg border-2 border-gray-600 focus:border-yellow-500 outline-none mb-4 appearance-none" inputmode="numeric">
-                    <div id="stock-preview-text" class="absolute bottom-6 left-0 right-0 text-center text-xs text-gray-500 pointer-events-none"></div>
+                    <input type="number" id="manual-qty" placeholder="Miktar" class="w-full bg-black text-white text-center text-4xl font-bold py-4 rounded-lg border-2 border-red-900 focus:border-red-500 outline-none mb-4 appearance-none" inputmode="numeric">
                 </div>
                 
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="requestTransaction('out')" class="bg-red-600 hover:bg-red-700 py-4 rounded-xl font-bold text-xl shadow-lg border-b-4 border-red-800">SAT</button>
-                    <button onclick="requestTransaction('in')" class="bg-green-600 hover:bg-green-700 py-4 rounded-xl font-bold text-xl shadow-lg border-b-4 border-green-800">GİRİŞ</button>
-                </div>
+                <button onclick="requestTransaction()" class="w-full bg-red-600 hover:bg-red-700 py-5 rounded-xl font-bold text-2xl shadow-lg border-b-4 border-red-800 flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-basket-shopping"></i> SATIŞ YAP
+                </button>
             </div>
             <div class="h-20"></div>
         </div>
@@ -194,17 +227,47 @@
         let scanner = null;
         let isCameraRunning = false;
         let fileSha = null;
-        let pendingAction = { type: null, amount: 0 };
         
-        // GÜNLÜK VERİLER (LOCALSTORAGE)
+        // GÜNLÜK VERİLER (SİLME MANTIĞI EKLENDİ)
         let dailyStats = JSON.parse(localStorage.getItem('dailyStats')) || { date: new Date().toLocaleDateString(), ciro: 0, log: [] };
 
         window.onload = async () => {
-            checkDailyReset();
+            cleanOldLogs(); // 2 gün kontrolü
             updateDashboardStats();
             if(sessionStorage.getItem("auth") === "true") unlockApp();
             else document.getElementById('login-pin').focus();
         };
+
+        function cleanOldLogs() {
+            // Basit mantık: Eğer kayıtlı tarih bugünden farklıysa ve 2 günden eskiyse sıfırla.
+            // Daha gelişmiş tarih kontrolü yerine kullanıcı isteği üzerine basit tutuyoruz:
+            // "2 gün sonra silinecek" -> Biz her gün kontrol ediyoruz, tarih değişmişse ciro sıfırlanır, loglar tutulur mu?
+            // İsteğe göre: Günlük rapor 2 gün tutulacak denmiş. Biz LocalStorage'da tutuyoruz.
+            // Bu versiyonda: Eğer tarih 2 gün önceden eskiyse logu temizle.
+            
+            const today = new Date();
+            const logDateParts = dailyStats.date.split('.');
+            // Basit tarih parse (dd.mm.yyyy)
+            const logDate = new Date(logDateParts[2], logDateParts[1]-1, logDateParts[0]);
+            
+            const diffTime = Math.abs(today - logDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+            if(diffDays > 2) {
+                console.log("Eski kayıtlar temizleniyor...");
+                dailyStats = { date: today.toLocaleDateString(), ciro: 0, log: [] };
+                localStorage.setItem('dailyStats', JSON.stringify(dailyStats));
+            } else if (dailyStats.date !== today.toLocaleDateString()) {
+                 // Gün değişmiş ama 2 gün geçmemiş. Ciro'yu sıfırla, Logu tut? 
+                 // Genelde "Günlük Ciro" o güne aittir. 
+                 // Basitleştirilmiş: Tarih değiştiyse Ciro sıfırla.
+                 if(diffDays >= 1) {
+                     dailyStats.ciro = 0; // Yeni gün cirosu 0 başlar
+                     dailyStats.date = today.toLocaleDateString(); // Tarihi güncelle
+                     localStorage.setItem('dailyStats', JSON.stringify(dailyStats));
+                 }
+            }
+        }
 
         function checkLogin() {
             if(document.getElementById('login-pin').value === APP_PIN) unlockApp();
@@ -218,14 +281,6 @@
             await syncFromCloud();
         }
 
-        function checkDailyReset() {
-            const today = new Date().toLocaleDateString();
-            if(dailyStats.date !== today) {
-                dailyStats = { date: today, ciro: 0, log: [] };
-                localStorage.setItem('dailyStats', JSON.stringify(dailyStats));
-            }
-        }
-
         function updateDashboardStats() {
             document.getElementById('header-ciro').innerText = "Ciro: " + formatMoney(dailyStats.ciro);
             const logContainer = document.getElementById('last-transactions');
@@ -233,7 +288,7 @@
                 logContainer.innerHTML = '<div class="text-center italic">Henüz işlem yok...</div>';
             } else {
                 logContainer.innerHTML = dailyStats.log.slice(0, 5).map(l => 
-                    `<div class="flex justify-between border-b border-gray-700 pb-1"><span>${l.name}</span><span class="${l.type==='GİRİŞ'?'text-green-500':'text-red-500'}">${l.qty} Ad. (${l.type})</span></div>`
+                    `<div class="flex justify-between border-b border-gray-700 pb-1"><span>${l.name}</span><span class="text-red-500">${l.qty} ${l.unit} (SAT)</span></div>`
                 ).join('');
             }
         }
@@ -263,7 +318,7 @@
             if(isCameraRunning) toggleCamera();
             currentId = code;
             if (!db.products[code]) {
-                if(confirm("Yeni Ürün Ekle?\nID: " + code)) createProduct(code);
+                if(confirm("YENİ ÜRÜN TANIMLA?\nID: " + code)) createProductChain(code);
                 return;
             } 
             showProductPage();
@@ -305,11 +360,13 @@
             }
             document.getElementById('p-id-badge').innerText = "ID: " + displayId;
             document.getElementById('p-name').innerText = p.name;
-            document.getElementById('p-price-edit').value = formatMoney(p.price || 0); // Fiyat inputuna yaz
+            document.getElementById('p-price-disp').innerText = formatMoney(p.price || 0);
             document.getElementById('p-stock').innerText = p.stock;
             
-            let len = parseFloat(p.length || p.size) || 0;
-            document.getElementById('live-length').innerHTML = parseFloat(len.toFixed(2)) + " <span class='text-sm text-gray-500'>cm</span>";
+            // Birim Gösterimi
+            const unit = p.unit || 'adt';
+            document.getElementById('p-unit-disp').innerText = unit.toUpperCase();
+            document.getElementById('confirm-unit-disp').innerText = unit.toUpperCase();
 
             // Parça listesi
             const container = document.getElementById('offcut-container');
@@ -320,168 +377,141 @@
                 p.offcuts.forEach((cm, idx) => {
                     const row = document.createElement('div');
                     row.className = "flex justify-between items-center bg-black/40 p-3 rounded border border-gray-600";
-                    let niceCm = parseFloat(parseFloat(cm).toFixed(2));
-                    row.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-puzzle-piece text-gray-500"></i><span class="text-blue-300 font-bold text-lg">${niceCm} cm</span></div><button onclick="sellOffcut(${idx})" class="bg-red-900/80 text-red-200 text-xs px-3 py-2 rounded font-bold border border-red-700 hover:bg-red-800">SİL</button>`;
+                    row.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-puzzle-piece text-gray-500"></i><span class="text-blue-300 font-bold text-lg">${cm} cm</span></div><button onclick="sellOffcut(${idx})" class="bg-red-900/80 text-red-200 text-xs px-3 py-2 rounded font-bold border border-red-700 hover:bg-red-800">SİL</button>`;
                     list.appendChild(row);
                 });
             } else { container.classList.add('hidden'); }
-            
-            updateCutPreview(); // Reset preview
         }
 
-        // --- 🛠️ YENİ ÖZELLİK: AKILLI FORMATLAMA ---
         function formatMoney(val) {
             return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(val).replace('₺', '') + '₺';
         }
 
-        function formatCurrencyInput(input) {
-            // Sadece görsel düzenleme, veri kaydetme çıkışta yapılır
-            let val = input.value.replace(/[^0-9,]/g, '');
-            // Basit tutuyoruz, kullanıcı serbest yazsın, kaydederken parse ederiz.
-        }
-
         function updateCutPreview() {
             const val = parseFloat(document.getElementById('cut-input').value) || 0;
-            const unit = document.getElementById('cut-unit').value;
             const preview = document.getElementById('cut-preview');
+            preview.innerText = val + " CM";
+        }
+
+        // --- İLK KAYIT ZİNCİRİ (YENİ) ---
+        async function createProductChain(code) {
+            // 1. Ad
+            let name = prompt("1/4 Ürün Adı:"); if(!name) return;
+            // 2. Fiyat
+            let price = prompt("2/4 Birim Fiyat (TL):", "0");
+            // 3. Birim
+            let unit = prompt("3/4 Birim (adt, m, m2, cm, kg):", "adt").toLowerCase();
+            // 4. Stok
+            let stock = prompt("4/4 Başlangıç Stoku:", "0");
             
-            if(val === 0) { preview.innerText = "0 CM"; return; }
+            // Boy sorusu sadece cm/m ise sorulabilir ama basit tutuyoruz
+            let length = 600; // Varsayılan boy
 
-            if(unit === 'm') {
-                const cm = Math.floor(val * 100) % 100;
-                const m = Math.floor(val);
-                preview.innerText = (m > 0 ? m + " Metre " : "") + (cm > 0 ? cm + " CM" : "");
-            } else if (unit === 'm2') {
-                preview.innerText = val + " Metre Kare";
-            } else if (unit === 'mm') {
-                preview.innerText = val + " Milimetre";
-            } else if (unit === 'adt') {
-                preview.innerText = val + " Adet";
-            } else {
-                preview.innerText = val + " CM";
-            }
+            db.products[code] = { 
+                name: name, 
+                price: parseFloat(price)||0, 
+                unit: unit,
+                stock: parseFloat(stock)||0, 
+                length: length, 
+                offcuts: [] 
+            };
+            await saveToCloud(); 
+            showProductPage();
         }
 
-        function updateStockPreview() {
-             // Stok girişi için basit uyarı gerekirse buraya eklenebilir
-        }
-
-        // --- KESİM MANTIĞI (GÜNCELLENDİ) ---
-        async function processCut() {
+        // --- DÜZENLEME MODALI ---
+        function openEditModal() {
             const p = db.products[currentId];
-            let cutVal = parseFloat(document.getElementById('cut-input').value);
-            const unit = document.getElementById('cut-unit').value;
-            let len = parseFloat(p.length || p.size) || 0;
-
-            if (!cutVal) return alert("Miktar gir!");
-
-            // BİRİM DÖNÜŞÜMÜ (Hepsi CM'ye çevrilir)
-            if(unit === 'm') cutVal = cutVal * 100;
-            else if(unit === 'mm') cutVal = cutVal / 10;
-            // m2 ve adet doğrudan düşülür gibi varsayıyoruz şimdilik, ama "Kesim" genelde boydan olur.
-            // Eğer ürün m2 ile satılıyorsa boy bilgisi m2 olabilir.
-
-            if (len === 0) { 
-                let manual = prompt("TAM BOY (CM)?", "600"); if(!manual) return; 
-                len = parseFloat(manual); p.length = len; 
-            }
-            if (cutVal >= len) return alert("Boydan büyük kesilemez!");
-
-            const remaining = parseFloat((len - cutVal).toFixed(2));
-            if (p.stock > 0) {
-                if(confirm(`✂️ KESİM ONAYI\n\nAna stoktan 1 düşülecek.\nKesilen: ${cutVal} cm\nKalan ${remaining} cm 'Parça Deposu'na eklenecek.`)) {
-                    p.stock--; if (!p.offcuts) p.offcuts = []; p.offcuts.push(remaining); 
-                    showStatus("Parça Ayrıldı ✅"); await saveToCloud(); showProductPage();
-                    document.getElementById('cut-input').value = "";
-                }
-            } else { alert("Stok Yok!"); }
+            document.getElementById('edit-name').value = p.name;
+            document.getElementById('edit-price').value = p.price;
+            document.getElementById('edit-stock').value = p.stock;
+            document.getElementById('edit-unit').value = p.unit || 'adt';
+            document.getElementById('edit-modal').classList.remove('hidden');
         }
 
-        // --- SATIŞ VE GİRİŞ İŞLEMLERİ ---
-        function requestTransaction(type) {
-            const val = parseInt(document.getElementById('manual-qty').value);
-            if (!val) return alert("Sayı gir!");
-            pendingAction = { type, amount: val };
-            document.getElementById('confirm-amount').innerText = val;
-            const txt = document.getElementById('confirm-type');
-            
-            // Fiyatı kaydet
-            let priceRaw = document.getElementById('p-price-edit').value.replace('₺','').replace('.','').replace(',','.');
-            db.products[currentId].price = parseFloat(priceRaw) || db.products[currentId].price;
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
 
-            if(type==='in') {
-                 txt.innerText = "GİRİŞ"; 
-                 txt.className = "font-bold text-green-400";
-            } else { 
-                txt.innerText = "SATIŞ"; // İsim değişti
-                txt.className = "font-bold text-red-400";
-            }
+        async function saveEditProduct() {
+            const p = db.products[currentId];
+            p.name = document.getElementById('edit-name').value;
+            p.price = parseFloat(document.getElementById('edit-price').value) || 0;
+            p.stock = parseFloat(document.getElementById('edit-stock').value) || 0;
+            p.unit = document.getElementById('edit-unit').value;
+            
+            closeEditModal();
+            showStatus("Güncellendi ✅");
+            await saveToCloud();
+            showProductPage();
+        }
+
+        // --- SATIŞ İŞLEMİ (SADECE ÇIKIŞ) ---
+        function requestTransaction() {
+            const val = parseFloat(document.getElementById('manual-qty').value);
+            if (!val) return alert("Miktar gir!");
+            document.getElementById('confirm-amount').innerText = val;
             document.getElementById('confirm-modal').classList.remove('hidden');
         }
 
         async function confirmTransaction() {
             document.getElementById('confirm-modal').classList.add('hidden');
-            let amt = pendingAction.amount; 
+            const val = parseFloat(document.getElementById('manual-qty').value);
             const p = db.products[currentId];
             
-            if(pendingAction.type === 'out') {
-                // STOK ÇIKIŞI (SATIŞ)
-                amt *= -1;
-                // Ciro Hesapla
-                const totalSale = p.price * Math.abs(amt);
-                dailyStats.ciro += totalSale;
-                dailyStats.log.unshift({ name: p.name, qty: Math.abs(amt), type: 'SATIŞ', total: totalSale });
-                localStorage.setItem('dailyStats', JSON.stringify(dailyStats));
-                updateDashboardStats();
-            } else {
-                // STOK GİRİŞİ
-                dailyStats.log.unshift({ name: p.name, qty: amt, type: 'GİRİŞ', total: 0 });
-                localStorage.setItem('dailyStats', JSON.stringify(dailyStats));
-                updateDashboardStats();
-            }
+            // Satış Mantığı
+            p.stock -= val;
+            
+            // Ciro ve Log
+            const totalSale = p.price * val;
+            dailyStats.ciro += totalSale;
+            dailyStats.log.unshift({ name: p.name, qty: val, unit: p.unit||'adt', total: totalSale });
+            localStorage.setItem('dailyStats', JSON.stringify(dailyStats));
+            updateDashboardStats();
 
-            p.stock += amt;
             document.getElementById('manual-qty').value = "";
             showProductPage(); 
             await saveToCloud();
         }
 
-        // --- YENİ: WHATSAPP RAPORLAMA ---
+        async function processCut() {
+            const p = db.products[currentId];
+            const cutVal = parseFloat(document.getElementById('cut-input').value);
+            if (!cutVal) return alert("Miktar gir!");
+            if(confirm("Stoktan 1 düşüp parça eklensin mi?")) {
+                p.stock--;
+                // Basit varsayım: Tam boydan kesildi. Kalanı hesaplamak için boy bilgisi lazım.
+                // Burada direkt kesileni değil kalanı hesaplatmıyoruz çünkü boy değişken olabilir.
+                // Kullanıcı sadece kesilen parçayı değil, ARTAN parçayı da manuel girebilir isterse.
+                // Basitlik için: Parça deposuna direkt kullanıcı ne girdiyse onu veya kalan hesabı ekleyebiliriz.
+                // Mevcut mantık: Kesileni al, (600 - kesilen) yap. 
+                // Beyaz eşyada kesim olmaz ama program esnek.
+                let length = p.length || 600;
+                let remaining = length - cutVal;
+                p.offcuts.push(remaining);
+                await saveToCloud(); showProductPage();
+            }
+        }
+
+        // --- WHATSAPP RAPOR ---
         function sendDailyReport() {
             if(dailyStats.log.length === 0) return alert("Bugün hareket yok.");
             let msg = `📅 *GÜN SONU RAPORU* (${dailyStats.date})\n\n`;
             msg += `💰 *Toplam Ciro:* ${formatMoney(dailyStats.ciro)}\n`;
             msg += `------------------\n`;
             dailyStats.log.forEach(l => {
-                if(l.type === 'SATIŞ') msg += `🔻 ${l.name}: ${l.qty} Ad. (${formatMoney(l.total)})\n`;
-                else msg += `🟢 ${l.name}: ${l.qty} Ad. GİRİŞ\n`;
+                msg += `🔻 ${l.name}: ${l.qty} ${l.unit} (${formatMoney(l.total)})\n`;
             });
             window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         function shareProductWhatsapp() {
             const p = db.products[currentId];
-            let msg = `📦 *Ürün Bilgisi*\n\n*Ürün:* ${p.name}\n*Fiyat:* ${formatMoney(p.price)}\n*Stok:* ${p.stock} Adet`;
+            let msg = `📦 *Ürün Bilgisi*\n\n*Ürün:* ${p.name}\n*Fiyat:* ${formatMoney(p.price)}\n*Stok:* ${p.stock} ${p.unit||'adt'}`;
             window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        // --- DİĞER FONKSİYONLAR ---
-        async function createProduct(code) {
-            let name = prompt("Ürün Adı:"); if(!name) return;
-            let price = prompt("Fiyat:", "0");
-            let length = prompt("Boy (CM):", "600");
-            db.products[code] = { name: name, price: parseFloat(price)||0, length: parseFloat(length)||0, size: length+" cm", stock: 0, offcuts: [] };
-            await saveToCloud(); showProductPage();
-        }
-        
-        async function editProduct(id) {
-            // Edit butonu artık sadece listeden çalışıyor, ürün içinden fiyatı doğrudan inputtan alıyoruz.
-            const p = db.products[id];
-            const n = prompt("Ad:", p.name); if (!n) return;
-            p.name = n;
-            await saveToCloud(); renderList("");
-        }
-
+        // --- DİĞER ---
         async function sellOffcut(index) {
             if(confirm("Siliniyor?")) { db.products[currentId].offcuts.splice(index, 1); showStatus("Silindi 🗑️"); await saveToCloud(); showProductPage(); }
         }
@@ -520,19 +550,16 @@
                 const p = db.products[k];
                 if (p.name.toLowerCase().includes(filter.toLowerCase())) {
                     const d = document.createElement('div');
-                    // Kritik Stok Kontrolü (3'ten azsa kırmızı)
                     const isCritical = p.stock < 3; 
                     d.className = `bg-gray-800 p-4 rounded-xl border ${isCritical ? 'critical-stock' : 'border-gray-700'} flex justify-between items-center`;
-                    
-                    const off = (p.offcuts && p.offcuts.length > 0) ? `<span class='text-blue-400 text-xs ml-2'>+${p.offcuts.length} Parça</span>` : "";
+                    const unit = p.unit || 'adt';
                     d.innerHTML = `
                         <div onclick="findProduct('${k}')" class="flex-1 cursor-pointer">
-                            <div class='font-bold text-white'>${p.name} ${off}</div>
+                            <div class='font-bold text-white'>${p.name}</div>
                             <div class='text-xs text-gray-500'>${k.slice(-6)}...</div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class='text-right mr-2'><div class='${isCritical ? 'text-red-500' : 'text-yellow-500'} font-bold'>${p.stock}</div><div class='text-green-400 text-xs'>${formatMoney(p.price)}</div></div>
-                            <button onclick="editProduct('${k}')" class="bg-gray-700 p-2 rounded text-blue-300"><i class="fa-solid fa-pen"></i></button>
+                            <div class='text-right mr-2'><div class='${isCritical ? 'text-red-500' : 'text-yellow-500'} font-bold'>${p.stock} <span class="text-[10px] text-gray-400">${unit}</span></div><div class='text-green-400 text-xs'>${formatMoney(p.price)}</div></div>
                         </div>`;
                     c.appendChild(d);
                 }
