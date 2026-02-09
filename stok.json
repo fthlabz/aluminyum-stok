@@ -11,10 +11,12 @@
       "size": 0
     },
     "URUN-214462-67904": {
-      "offcuts": [],
+      "offcuts": [
+        4
+      ],
       "name": "Saray halı",
       "price": 2.5,
-      "stock": 49,
+      "stock": 48,
       "size": 6,
       "unit": "M²",
       "extraLabel": "Skt",
