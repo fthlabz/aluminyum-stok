@@ -39,7 +39,7 @@
       ],
       "name": "Rıfkı zeytin",
       "price": 4750,
-      "stock": 94,
+      "stock": 90,
       "size": 18,
       "unit": "KG",
       "extraLabel": "Skt",
@@ -48,8 +48,14 @@
   },
   "dailyStats": {
     "date": "9.02.2026",
-    "ciro": 30750,
+    "ciro": 49750,
     "log": [
+      {
+        "name": "Rıfkı zeytin",
+        "qty": 4,
+        "total": 19000,
+        "staff": "Ayşe"
+      },
       {
         "name": "Rıfkı zeytin",
         "qty": 5,
