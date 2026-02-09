@@ -9,6 +9,16 @@
       "unit": "M²",
       "extraLabel": "Skt",
       "extraValue": "20.13.2026"
+    },
+    "URUN-214462-81352": {
+      "offcuts": [],
+      "name": "Enes zeytin gold",
+      "price": 4750,
+      "stock": 50,
+      "size": 18,
+      "unit": "KG",
+      "extraLabel": "Skt",
+      "extraValue": "11.08.2027"
     }
   },
   "dailyStats": {
