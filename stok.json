@@ -32,6 +32,16 @@
       "unit": "CM",
       "extraLabel": "Deneme",
       "extraValue": "Olur öyle"
+    },
+    "URUN-214462-81352": {
+      "offcuts": [],
+      "name": "Rıfkı zeytin",
+      "price": 4750,
+      "stock": 100,
+      "size": 18,
+      "unit": "KG",
+      "extraLabel": "Skt",
+      "extraValue": "11.03.2026"
     }
   },
   "dailyStats": {
