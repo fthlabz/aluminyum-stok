@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Stok Master v10.5 (Logic Fix)</title>
+    <title>Stok Master v12.0 (Multi-User)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
@@ -18,60 +18,60 @@
         .critical-stock { border: 2px solid #ef4444 !important; animation: pulseRed 2s infinite; }
         @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
-        /* --- PREMIUM FORM STİLİ --- */
+        /* MODERN FORM */
         .input-group { margin-bottom: 0.8rem; }
         .input-label { display: block; font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 0.3rem; letter-spacing: 0.05em; }
-        .modern-input { 
-            width: 100%; 
-            background-color: #1e293b; 
-            border: 1px solid #334155; 
-            color: white; 
-            padding: 0.7rem 0.9rem; 
-            border-radius: 0.6rem; 
-            font-size: 0.95rem; 
-            font-weight: 500;
-            outline: none;
-            transition: all 0.2s;
-        }
+        .modern-input { width: 100%; background-color: #1e293b; border: 1px solid #334155; color: white; padding: 0.7rem 0.9rem; border-radius: 0.6rem; font-size: 0.95rem; font-weight: 500; outline: none; transition: all 0.2s; }
         .modern-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
-        .modern-select {
-            appearance: none; 
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.5rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-        }
+        .modern-select { appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; }
     </style>
 </head>
 <body>
 
     <div id="login-screen" class="fixed inset-0 bg-gray-900 z-[9999] flex flex-col items-center justify-center p-6">
         <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-700 w-full max-w-sm text-center">
-            <i class="fa-solid fa-lock text-5xl text-yellow-500 mb-4"></i>
-            <h2 class="text-2xl font-bold text-white mb-2">Sistem Kilitli</h2>
-            <input type="tel" id="login-pin" maxlength="4" placeholder="****" class="w-full bg-black text-white text-center text-3xl font-bold py-4 rounded-xl border-2 border-gray-600 focus:border-yellow-500 outline-none mb-4 tracking-[10px]">
-            <button onclick="checkLogin()" class="w-full bg-yellow-600 text-black font-bold py-4 rounded-xl text-lg">GİRİŞ YAP</button>
+            <div class="mb-6">
+                <i class="fa-solid fa-users text-4xl text-blue-500 mb-2"></i>
+                <h2 class="text-xl font-bold text-white">Personel Girişi</h2>
+            </div>
+            
+            <div class="mb-4 text-left">
+                <label class="input-label">KİM GİRİŞ YAPIYOR?</label>
+                <select id="staff-select" class="modern-input modern-select bg-gray-900 h-12 border-blue-500/50">
+                    <option value="" disabled selected>İsim Seçiniz...</option>
+                    <option value="Ahmet">Ahmet</option>
+                    <option value="Mehmet">Mehmet</option>
+                    <option value="Ayşe">Ayşe</option>
+                    <option value="Fatma">Fatma</option>
+                    <option value="Ali">Ali</option>
+                    <option value="Patron">Patron</option>
+                </select>
+            </div>
+
+            <div class="mb-4 text-left">
+                <label class="input-label">GÜVENLİK PİNİ</label>
+                <input type="tel" id="login-pin" maxlength="4" placeholder="****" class="w-full bg-black text-white text-center text-3xl font-bold py-3 rounded-xl border-2 border-gray-600 focus:border-yellow-500 outline-none tracking-[10px]">
+            </div>
+
+            <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl text-lg transition-colors shadow-lg shadow-blue-900/40">SİSTEMİ AÇ</button>
         </div>
     </div>
 
     <div id="create-modal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-gray-800 border border-gray-600 w-full max-w-md rounded-2xl p-6 shadow-2xl modal-enter relative overflow-y-auto max-h-[95vh]">
-            
             <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-3">
                 <h3 class="text-lg font-bold text-white">Ürün Tanımla</h3>
                 <button onclick="closeCreateModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark fa-lg"></i></button>
             </div>
-            
             <div class="space-y-1">
                 <div class="input-group">
                     <label class="input-label">Ürün Adı</label>
                     <input type="text" id="new-name" class="modern-input" placeholder="Örn: Saray Halı">
                 </div>
-
                 <div class="grid grid-cols-2 gap-3">
                     <div class="input-group">
                         <label class="input-label">Tek Ürün Ölçüsü</label>
-                        <input type="number" id="new-size" class="modern-input" placeholder="Örn: 6 (m2 için)">
+                        <input type="number" id="new-size" class="modern-input" placeholder="Örn: 6">
                     </div>
                     <div class="input-group">
                         <label class="input-label">Ölçü Birimi</label>
@@ -84,7 +84,6 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-3">
                     <div class="input-group">
                         <label class="input-label">Birim Fiyat (TL)</label>
@@ -95,44 +94,48 @@
                         <input type="number" id="new-stock" class="modern-input text-yellow-400 font-bold" placeholder="0">
                     </div>
                 </div>
-
                 <div class="mt-2 bg-gray-900/60 p-3 rounded-xl border border-gray-700">
                     <label class="input-label text-blue-400 flex items-center gap-2 mb-2"><i class="fa-solid fa-tags"></i> Özel Etiket</label>
                     <div class="grid grid-cols-5 gap-2">
-                        <div class="col-span-2">
-                            <input type="text" id="new-extra-label" class="modern-input text-xs" placeholder="Etiket (SKT)">
-                        </div>
-                        <div class="col-span-3">
-                            <input type="text" id="new-extra-value" class="modern-input text-xs" placeholder="Değer">
-                        </div>
+                        <div class="col-span-2"><input type="text" id="new-extra-label" class="modern-input text-xs" placeholder="Etiket"></div>
+                        <div class="col-span-3"><input type="text" id="new-extra-value" class="modern-input text-xs" placeholder="Değer"></div>
                     </div>
                 </div>
             </div>
-
             <div class="grid grid-cols-2 gap-4 mt-6">
-                <button onclick="closeCreateModal()" class="bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-xl font-bold transition-colors">İPTAL</button>
-                <button onclick="saveProductData()" class="bg-green-600 hover:bg-green-500 text-white py-3 rounded-xl font-bold shadow-lg shadow-green-900/20 transition-colors">KAYDET</button>
+                <button onclick="closeCreateModal()" class="bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-xl font-bold">İPTAL</button>
+                <button onclick="saveProductData()" class="bg-green-600 hover:bg-green-500 text-white py-3 rounded-xl font-bold shadow-lg">KAYDET</button>
             </div>
         </div>
     </div>
 
     <div id="app-content" class="flex flex-col h-full hidden">
         
-        <header class="bg-gray-800 p-3 shadow-md border-b border-gray-700 flex justify-between items-center z-20 shrink-0 gap-2">
-            <div class="flex items-center gap-2 overflow-hidden">
-                <i class="fa-solid fa-cube text-yellow-500"></i>
-                <div class="flex flex-col">
-                    <span class="font-bold text-gray-200 text-xs tracking-wide truncate">FTHLABZ v10.5</span>
-                    <span class="text-[10px] text-green-400 font-mono" id="header-ciro">Ciro: 0₺</span>
+        <header class="bg-gray-800 p-2 shadow-md border-b border-gray-700 z-20 shrink-0">
+            <div class="flex justify-between items-center mb-1">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-user-circle text-blue-400"></i>
+                    <span id="staff-name-disp" class="font-bold text-white text-sm">...</span>
+                </div>
+                <div class="flex gap-2">
+                     <button onclick="showListPage()" class="bg-gray-700 px-3 py-1 rounded text-[10px] font-bold text-white border border-gray-600">LİSTE</button>
+                     <button onclick="logout()" class="bg-red-900/50 px-2 py-1 rounded text-[10px] text-red-300 border border-red-800">ÇIK</button>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button onclick="showListPage()" class="bg-gray-700 px-3 py-1.5 rounded text-xs font-bold text-white border border-gray-600 flex items-center gap-2"><i class="fa-solid fa-list-ul"></i> LİSTE</button>
-                <button onclick="togglePriceMenu()" class="bg-indigo-600 px-3 py-1.5 rounded text-xs font-bold text-white shadow-lg border border-indigo-500 flex items-center gap-2"><i class="fa-solid fa-tags"></i> FİYAT</button>
+            
+            <div class="grid grid-cols-2 gap-2 bg-black/40 p-2 rounded-lg border border-gray-700">
+                <div class="text-center border-r border-gray-700">
+                    <div class="text-[9px] text-gray-400 uppercase font-bold">BENİM CİROM</div>
+                    <div id="my-ciro" class="text-green-400 font-bold text-sm">0₺</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-[9px] text-gray-400 uppercase font-bold">DÜKKAN TOPLAM</div>
+                    <div id="shop-ciro" class="text-yellow-500 font-bold text-sm">0₺</div>
+                </div>
             </div>
         </header>
 
-        <div id="status-box" class="absolute top-16 left-1/2 transform -translate-x-1/2 bg-green-600 px-4 py-2 rounded-full text-sm font-bold text-white z-50 transition-opacity duration-500 opacity-0 shadow-lg border border-green-400">İşlem Başarılı</div>
+        <div id="status-box" class="absolute top-24 left-1/2 transform -translate-x-1/2 bg-green-600 px-4 py-2 rounded-full text-sm font-bold text-white z-50 transition-opacity duration-500 opacity-0 shadow-lg border border-green-400">İşlem Başarılı</div>
 
         <div id="confirm-modal" class="hidden fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
             <div class="bg-gray-800 border border-gray-600 w-full max-w-sm rounded-2xl p-6 shadow-2xl modal-enter text-center">
@@ -145,21 +148,7 @@
             </div>
         </div>
 
-        <div id="price-menu" class="hidden absolute top-14 right-2 left-2 bg-gray-800 border border-gray-600 p-4 rounded-xl shadow-2xl z-50">
-            <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-                <h3 class="font-bold text-white">Toplu Fiyat</h3>
-                <button onclick="togglePriceMenu()" class="text-gray-400"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <button onclick="applyBulkPrice(5)" class="bg-green-700/50 border border-green-600 py-3 rounded-lg font-bold">+%5 ZAM</button>
-                <button onclick="applyBulkPrice(10)" class="bg-green-800/50 border border-green-700 py-3 rounded-lg font-bold">+%10 ZAM</button>
-                <button onclick="applyBulkPrice(-5)" class="bg-red-700/50 border border-red-600 py-3 rounded-lg font-bold">-%5 İNDİRİM</button>
-                <button onclick="applyBulkPrice(-10)" class="bg-red-800/50 border border-red-700 py-3 rounded-lg font-bold">-%10 İNDİRİM</button>
-            </div>
-        </div>
-
         <div id="scan-page" class="flex-1 flex flex-col items-center justify-center p-4 overflow-y-auto">
-            
             <div class="relative w-full max-w-sm aspect-square bg-black rounded-2xl overflow-hidden shadow-2xl border-2 border-yellow-600 mb-6 shrink-0 flex items-center justify-center">
                 <div id="reader" class="w-full h-full object-cover"></div>
                 <div id="camera-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 z-10">
@@ -177,19 +166,17 @@
                 <button onclick="sendDailyReport()" class="w-full bg-green-700/40 text-green-400 border border-green-600 py-2 rounded-lg font-bold text-sm mb-4 flex items-center justify-center gap-2">
                     <i class="fa-brands fa-whatsapp"></i> GÜN SONU RAPORU GÖNDER
                 </button>
-                <div class="text-[10px] text-gray-500 uppercase font-bold mb-2">Son İşlemler</div>
-                <div id="last-transactions" class="space-y-1 text-xs text-gray-400">
-                    <div class="text-center italic">Henüz işlem yok...</div>
-                </div>
+                <div class="text-[10px] text-gray-500 uppercase font-bold mb-2">Canlı Satış Akışı (Anlık)</div>
+                <div id="last-transactions" class="space-y-1 text-xs text-gray-400">Loading...</div>
             </div>
         </div>
 
         <div id="product-page" class="hidden flex-1 flex flex-col bg-gray-900 p-4 overflow-y-auto pb-32">
             <div class="flex justify-between items-center mb-2">
-                <button onclick="goHome()" class="text-gray-400 flex items-center gap-2 text-sm w-fit p-2 hover:text-white transition-colors"><i class="fa-solid fa-arrow-left"></i> Kapat</button>
+                <button onclick="goHome()" class="text-gray-400 flex items-center gap-2 text-sm w-fit p-2 hover:text-white"><i class="fa-solid fa-arrow-left"></i> Kapat</button>
                 <div class="flex gap-2">
-                    <button onclick="openCreateModal(true)" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-1.5 rounded-full text-xs font-bold border border-gray-600 transition-colors"><i class="fa-solid fa-pen"></i> DÜZENLE</button>
-                    <button onclick="shareProductWhatsapp()" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-full text-xs font-bold transition-colors"><i class="fa-brands fa-whatsapp fa-lg"></i></button>
+                    <button onclick="openCreateModal(true)" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-1.5 rounded-full text-xs font-bold border border-gray-600"><i class="fa-solid fa-pen"></i> DÜZENLE</button>
+                    <button onclick="shareProductWhatsapp()" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-full text-xs font-bold"><i class="fa-brands fa-whatsapp fa-lg"></i></button>
                 </div>
             </div>
             
@@ -208,12 +195,10 @@
                         <div id="p-stock" class="text-4xl font-bold text-yellow-500">0</div>
                     </div>
                 </div>
-                
                 <div id="p-extra-info" class="mt-3 bg-blue-900/20 border border-blue-900/30 p-3 rounded-lg flex justify-between items-center hidden">
                     <span id="p-extra-label" class="text-xs text-blue-300 font-bold uppercase tracking-wider">...</span>
                     <span id="p-extra-value" class="text-sm text-white font-mono bg-blue-900/40 px-2 py-0.5 rounded">...</span>
                 </div>
-
                 <div class="mt-3 text-right">
                     <span class="text-[10px] text-gray-400 uppercase mr-2 font-bold">ÜRÜN ÖLÇÜSÜ:</span>
                     <span id="p-size-disp" class="text-lg font-bold text-blue-400 uppercase">0 M2</span>
@@ -225,15 +210,15 @@
                     <span><i class="fa-solid fa-scissors"></i> Parça Kes / Ayır</span>
                 </div>
                 <div class="flex gap-0 w-full">
-                    <input type="number" step="any" id="cut-input" placeholder="Kesilen Miktar" class="w-full bg-gray-900 text-white py-3 px-4 rounded-l-lg border border-gray-600 border-r-0 focus:border-gray-500 outline-none font-bold text-lg">
+                    <input type="number" step="any" id="cut-input" placeholder="Kesilen" class="w-full bg-gray-900 text-white py-3 px-4 rounded-l-lg border border-gray-600 border-r-0 focus:border-gray-500 outline-none font-bold text-lg">
                     <button onclick="processCut()" class="bg-gray-700 text-white px-6 rounded-r-lg font-bold border border-gray-600 hover:bg-gray-600 active:bg-gray-500 whitespace-nowrap transition-colors">KES</button>
                 </div>
-                <p class="text-[10px] text-gray-500 mt-2 text-right text-blue-300">*1 Stok Düşer, Kalan Parça Depoya Eklenir.</p>
+                <p class="text-[10px] text-gray-500 mt-2 text-right text-blue-300">*1 Stok Düşer, Kalan Depoya Eklenir.</p>
             </div>
 
             <div id="offcut-container" class="bg-gray-800 p-4 rounded-xl border border-gray-600 shadow-lg hidden mb-4">
                 <h3 class="text-xs text-gray-400 font-bold uppercase mb-3 border-b border-gray-600 pb-2 flex justify-between items-center">
-                    <span><i class="fa-solid fa-layer-group text-blue-400"></i> PARÇA DEPOSU (ARTANLAR)</span>
+                    <span><i class="fa-solid fa-layer-group text-blue-400"></i> ARTANLAR</span>
                 </h3>
                 <div id="offcut-list" class="space-y-2"></div>
             </div>
@@ -243,7 +228,6 @@
                 <div class="relative mb-4">
                     <input type="number" id="manual-qty" placeholder="Satış Miktarı" class="w-full bg-gray-900 text-white text-center text-3xl font-bold py-4 rounded-lg border-2 border-red-900/50 focus:border-red-600 outline-none appearance-none transition-colors" inputmode="numeric">
                 </div>
-                
                 <button onclick="requestTransaction()" class="w-full bg-red-600 hover:bg-red-700 py-4 rounded-xl font-bold text-xl shadow-lg shadow-red-900/40 border-b-4 border-red-800 flex items-center justify-center gap-3 transition-transform active:scale-[0.98]">
                     <i class="fa-solid fa-basket-shopping"></i> SATIŞ YAP
                 </button>
@@ -258,67 +242,125 @@
             </div>
             <div id="list-container" class="flex-1 overflow-y-auto space-y-3 pb-20"></div>
         </div>
-    
     </div>
 
     <script>
-        // --- 🔐 AYARLAR ---
         const APP_PIN = "1453"; 
         const token_part_1 = "ghp_"; 
-        // 👇 TOKEN BURAYA:
         const token_part_2 = "9gT7hgXXkyWE01zwNzYOFY621lkSIv4HIyLr"; 
         const CONFIG = { USER: "fthlabz", REPO: "stok-takip", FILE: "stok.json", TOKEN: token_part_1 + token_part_2 };
 
-        let db = { products: {} };
+        let db = { products: {}, dailyStats: { date: "", ciro: 0, log: [] } };
         let currentId = null;
         let scanner = null;
         let isCameraRunning = false;
         let fileSha = null;
         let isProcessing = false;
-        let dailyStats = JSON.parse(localStorage.getItem('dailyStats')) || { date: new Date().toLocaleDateString(), ciro: 0, log: [] };
+        let currentStaff = ""; // GİRİŞ YAPAN PERSONEL
 
         window.onload = async () => {
-            cleanOldLogs();
-            updateDashboardStats();
-            if(sessionStorage.getItem("auth") === "true") unlockApp();
-            else document.getElementById('login-pin').focus();
+            const savedStaff = sessionStorage.getItem("currentStaff");
+            if(sessionStorage.getItem("auth") === "true" && savedStaff) {
+                currentStaff = savedStaff;
+                unlockApp();
+            } else {
+                document.getElementById('staff-select').focus();
+            }
         };
 
-        function cleanOldLogs() {
-            const today = new Date();
-            const todayStr = today.toLocaleDateString();
-            
-            // Eğer tarih değiştiyse ciroyu sıfırla, yoksa localStorage'dan devam et
-            if (dailyStats.date !== todayStr) {
-                dailyStats = { date: todayStr, ciro: 0, log: [] };
-                localStorage.setItem('dailyStats', JSON.stringify(dailyStats));
-            }
-        }
-
         function checkLogin() {
-            if(document.getElementById('login-pin').value === APP_PIN) unlockApp();
-            else { alert("Hatalı Şifre!"); document.getElementById('login-pin').value = ""; }
+            const staff = document.getElementById('staff-select').value;
+            const pin = document.getElementById('login-pin').value;
+            
+            if(!staff) return alert("Lütfen Personel Seçin!");
+            
+            if(pin === APP_PIN) {
+                currentStaff = staff;
+                sessionStorage.setItem("currentStaff", staff);
+                unlockApp();
+            } else { 
+                alert("Hatalı Şifre!"); document.getElementById('login-pin').value = ""; 
+            }
         }
 
         async function unlockApp() {
             sessionStorage.setItem("auth", "true");
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app-content').classList.remove('hidden');
+            document.getElementById('staff-name-disp').innerText = currentStaff;
             await syncFromCloud();
         }
 
+        function logout() {
+            sessionStorage.clear();
+            location.reload();
+        }
+
+        async function syncFromCloud() {
+            try {
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents/${CONFIG.FILE}`, { headers: { 'Authorization': `token ${CONFIG.TOKEN}` }, cache: "no-store" });
+                if(!res.ok) throw new Error();
+                const data = await res.json();
+                fileSha = data.sha;
+                db = JSON.parse(decodeURIComponent(escape(window.atob(data.content))));
+                
+                if(!db.dailyStats) db.dailyStats = { date: "", ciro: 0, log: [] };
+
+                const today = new Date().toLocaleDateString('tr-TR');
+                if (db.dailyStats.date !== today) {
+                    db.dailyStats = { date: today, ciro: 0, log: [] };
+                }
+
+                showStatus("Hazır 🟢", false);
+                updateDashboardStats();
+            } catch (e) { showStatus("Bağlantı Yok 🔴", false); }
+        }
+
+        async function saveToCloud() {
+            showStatus("Kaydediliyor...", true);
+            const content = window.btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
+            try {
+                await fetch(`https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents/${CONFIG.FILE}`, { method: 'PUT', headers: { 'Authorization': `token ${CONFIG.TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ message: "Update", content, sha: fileSha }) });
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents/${CONFIG.FILE}`, { headers: { 'Authorization': `token ${CONFIG.TOKEN}` }, cache: "no-store" });
+                const data = await res.json();
+                fileSha = data.sha;
+                showStatus("Kaydedildi ✅", false);
+            } catch(e) { showStatus("Hata! ❌", false); }
+        }
+
         function updateDashboardStats() {
-            document.getElementById('header-ciro').innerText = "Ciro: " + formatMoney(dailyStats.ciro);
-            const logContainer = document.getElementById('last-transactions');
-            if(dailyStats.log.length === 0) {
-                logContainer.innerHTML = '<div class="text-center italic">Henüz işlem yok...</div>';
-            } else {
-                logContainer.innerHTML = dailyStats.log.slice(0, 5).map(l => 
-                    `<div class="flex justify-between border-b border-gray-700 pb-1"><span>${l.name}</span><span class="text-red-500">${l.qty} ADT (SAT)</span></div>`
-                ).join('');
+            if(db.dailyStats) {
+                // 1. Dükkan Toplam Cirosu
+                document.getElementById('shop-ciro').innerText = formatMoney(db.dailyStats.ciro);
+
+                // 2. Kişisel Ciro Hesabı
+                let myTotal = 0;
+                db.dailyStats.log.forEach(item => {
+                    if(item.staff === currentStaff) myTotal += item.total;
+                });
+                document.getElementById('my-ciro').innerText = formatMoney(myTotal);
+
+                // 3. Log Listesi (Renklendirilmiş)
+                const logContainer = document.getElementById('last-transactions');
+                if(db.dailyStats.log.length === 0) {
+                    logContainer.innerHTML = '<div class="text-center italic">Henüz işlem yok...</div>';
+                } else {
+                    logContainer.innerHTML = db.dailyStats.log.slice(0, 10).map(l => {
+                        const isMe = l.staff === currentStaff;
+                        const colorClass = isMe ? "text-green-400" : "text-gray-500";
+                        return `<div class="flex justify-between border-b border-gray-700 pb-1 text-[10px]">
+                            <span class="text-white">${l.name}</span>
+                            <div class="text-right">
+                                <span class="font-bold ${colorClass}">${l.staff}</span> 
+                                <span class="text-red-400">(${l.qty} Ad)</span>
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
             }
         }
 
+        // --- KAMERA & TARAMA ---
         function toggleCamera() {
             const btn = document.getElementById('toggle-cam-btn');
             const overlay = document.getElementById('camera-overlay');
@@ -349,44 +391,17 @@
             setTimeout(() => { isProcessing = false; }, 1000); 
         }
 
-        async function syncFromCloud() {
-            try {
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents/${CONFIG.FILE}`, { headers: { 'Authorization': `token ${CONFIG.TOKEN}` }, cache: "no-store" });
-                if(!res.ok) throw new Error();
-                const data = await res.json();
-                fileSha = data.sha;
-                db = JSON.parse(decodeURIComponent(escape(window.atob(data.content))));
-                showStatus("Hazır 🟢", false);
-            } catch (e) { showStatus("Bağlantı Yok 🔴", false); }
-        }
-
-        async function saveToCloud() {
-            showStatus("Kaydediliyor...", true);
-            const content = window.btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
-            try {
-                await fetch(`https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents/${CONFIG.FILE}`, { method: 'PUT', headers: { 'Authorization': `token ${CONFIG.TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ message: "Update", content, sha: fileSha }) });
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents/${CONFIG.FILE}`, { headers: { 'Authorization': `token ${CONFIG.TOKEN}` }, cache: "no-store" });
-                const data = await res.json();
-                fileSha = data.sha;
-                showStatus("Kaydedildi ✅", false);
-            } catch(e) { showStatus("Hata! ❌", false); }
-        }
-
-        // --- MODAL İŞLEMLERİ (DÜZELTİLDİ) ---
+        // --- MODAL İŞLEMLERİ ---
         function openCreateModal(isEdit) {
             const modal = document.getElementById('create-modal');
             const p = isEdit ? db.products[currentId] : null;
-
             document.getElementById('new-name').value = p ? p.name : "";
             document.getElementById('new-price').value = p ? p.price : "";
             document.getElementById('new-stock').value = p ? p.stock : "";
-            // Tek Ürün Ölçüsü ve Birimi
             document.getElementById('new-size').value = p ? p.size : ""; 
             document.getElementById('new-unit').value = p ? p.unit : "M²";
-            
             document.getElementById('new-extra-label').value = p && p.extraLabel ? p.extraLabel : "";
             document.getElementById('new-extra-value').value = p && p.extraValue ? p.extraValue : "";
-
             modal.classList.remove('hidden');
         }
 
@@ -399,7 +414,7 @@
             const name = document.getElementById('new-name').value;
             const price = parseFloat(document.getElementById('new-price').value) || 0;
             const stock = parseFloat(document.getElementById('new-stock').value) || 0;
-            const size = parseFloat(document.getElementById('new-size').value) || 0; // TEK ÜRÜN ÖLÇÜSÜ
+            const size = parseFloat(document.getElementById('new-size').value) || 0;
             const unit = document.getElementById('new-unit').value;
             const exLabel = document.getElementById('new-extra-label').value;
             const exValue = document.getElementById('new-extra-value').value;
@@ -408,13 +423,8 @@
             if(!db.products[currentId]) db.products[currentId] = { offcuts: [] };
             
             const p = db.products[currentId];
-            p.name = name;
-            p.price = price;
-            p.stock = stock;
-            p.size = size; // Örn: 6 (m2)
-            p.unit = unit; // Örn: M2
-            p.extraLabel = exLabel;
-            p.extraValue = exValue;
+            p.name = name; p.price = price; p.stock = stock; p.size = size; p.unit = unit;
+            p.extraLabel = exLabel; p.extraValue = exValue;
 
             closeCreateModal();
             showStatus(db.products[currentId].offcuts.length > 0 ? "Güncellendi" : "Kaydedildi");
@@ -425,31 +435,24 @@
         function showProductPage() {
             document.querySelectorAll('[id$="-page"]').forEach(el => el.classList.add('hidden'));
             document.getElementById('product-page').classList.remove('hidden');
-            
             const p = db.products[currentId];
             let displayId = currentId;
-            if(displayId.length > 20) {
-                 if(displayId.includes("id=")) displayId = displayId.split("id=")[1];
-                 else if(displayId.includes("/")) displayId = displayId.split("/").pop();
-            }
+            if(displayId.length > 20) { if(displayId.includes("id=")) displayId = displayId.split("id=")[1]; else if(displayId.includes("/")) displayId = displayId.split("/").pop(); }
+            
             document.getElementById('p-id-badge').innerText = "ID: " + displayId;
             document.getElementById('p-name').innerText = p.name;
             document.getElementById('p-price-disp').innerText = formatMoney(p.price || 0);
             document.getElementById('p-stock').innerText = p.stock;
             
-            // Ölçü Gösterimi: Örn "6 M2"
             const unit = p.unit || 'M²';
-            const size = p.size || 0;
-            document.getElementById('p-size-disp').innerText = size + " " + unit;
+            document.getElementById('p-size-disp').innerText = (p.size||0) + " " + unit;
 
             const extraBox = document.getElementById('p-extra-info');
             if(p.extraLabel && p.extraValue) {
                 extraBox.classList.remove('hidden');
                 document.getElementById('p-extra-label').innerText = p.extraLabel;
                 document.getElementById('p-extra-value').innerText = p.extraValue;
-            } else {
-                extraBox.classList.add('hidden');
-            }
+            } else { extraBox.classList.add('hidden'); }
 
             const container = document.getElementById('offcut-container');
             const list = document.getElementById('offcut-list');
@@ -459,39 +462,29 @@
                 p.offcuts.forEach((amt, idx) => {
                     const row = document.createElement('div');
                     row.className = "flex justify-between items-center bg-black/40 p-3 rounded border border-gray-600";
-                    // Artan parçayı göster
                     row.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-puzzle-piece text-gray-500"></i><span class="text-blue-300 font-bold text-lg">${amt} ${unit}</span></div><button onclick="sellOffcut(${idx})" class="bg-red-900/80 text-red-200 text-xs px-3 py-2 rounded font-bold border border-red-700 hover:bg-red-800">SİL</button>`;
                     list.appendChild(row);
                 });
             } else { container.classList.add('hidden'); }
-
             setTimeout(() => { document.getElementById('manual-qty').focus(); }, 300);
         }
 
-        function formatMoney(val) {
-            return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(val).replace('₺', '') + '₺';
-        }
-
-        // --- MANTIK DÜZELTİLDİ: KES / AYIR ---
+        // --- KESİM ---
         async function processCut() {
             const p = db.products[currentId];
             const cutVal = parseFloat(document.getElementById('cut-input').value);
-            const totalSize = parseFloat(p.size) || 0; // Tek ürünün boyutu (Örn: 6 m2)
+            const totalSize = parseFloat(p.size) || 0;
             const unit = p.unit || "Birim";
 
             if (!cutVal) return alert("Kesilecek miktarı girin!");
             if(p.stock <= 0) return alert("Stok yok!");
             if(cutVal >= totalSize) return alert("Ürün boyutundan fazla kesemezsiniz!");
 
-            // KALAN PARÇA HESABI
             const remaining = parseFloat((totalSize - cutVal).toFixed(2));
-
-            if(confirm(`✂️ KESİM ONAYI\n\nAna stoktan 1 ADET düşülecek.\nKesilen: ${cutVal} ${unit}\nDepoya Artan: ${remaining} ${unit}`)) {
+            if(confirm(`✂️ KESİM ONAYI\n\nStoktan 1 ADET düşülecek.\nKesilen: ${cutVal} ${unit}\nDepoya Artan: ${remaining} ${unit}`)) {
                 p.stock--;
                 if(!p.offcuts) p.offcuts = [];
-                // Depoya ARTAN parçayı ekle
                 p.offcuts.push(remaining); 
-                
                 showStatus("Parça Ayrıldı");
                 document.getElementById('cut-input').value = "";
                 await saveToCloud(); 
@@ -499,6 +492,7 @@
             }
         }
 
+        // --- SATIŞ ---
         function requestTransaction() {
             const val = parseFloat(document.getElementById('manual-qty').value);
             if (!val) return alert("Miktar gir!");
@@ -512,33 +506,47 @@
             const p = db.products[currentId];
             
             p.stock -= val;
-            
             const totalSale = p.price * val;
-            dailyStats.ciro += totalSale;
-            dailyStats.log.unshift({ name: p.name, qty: val, unit: 'ADT', total: totalSale });
-            localStorage.setItem('dailyStats', JSON.stringify(dailyStats));
-            updateDashboardStats();
+            
+            // LOGA PERSONEL ADINI DA EKLE
+            db.dailyStats.ciro += totalSale;
+            db.dailyStats.log.unshift({ name: p.name, qty: val, total: totalSale, staff: currentStaff });
 
+            updateDashboardStats();
             document.getElementById('manual-qty').value = "";
             showProductPage(); 
             await saveToCloud();
         }
 
+        // --- RAPORLAMA ---
         function sendDailyReport() {
-            if(dailyStats.log.length === 0) return alert("Bugün hareket yok.");
-            let msg = `📅 *GÜN SONU RAPORU* (${dailyStats.date})\n\n`;
-            msg += `💰 *Toplam Ciro:* ${formatMoney(dailyStats.ciro)}\n`;
+            if(!db.dailyStats || db.dailyStats.log.length === 0) return alert("Bugün hareket yok.");
+            let msg = `📅 *GÜN SONU RAPORU* (${db.dailyStats.date})\n`;
+            msg += `💰 *TOPLAM CİRO:* ${formatMoney(db.dailyStats.ciro)}\n`;
             msg += `------------------\n`;
-            dailyStats.log.forEach(l => {
-                msg += `🔻 ${l.name}: ${l.qty} ADT (${formatMoney(l.total)})\n`;
+            
+            // Personel Bazlı Özet
+            let staffTotals = {};
+            db.dailyStats.log.forEach(l => {
+                if(!staffTotals[l.staff]) staffTotals[l.staff] = 0;
+                staffTotals[l.staff] += l.total;
             });
+            
+            for (let [person, total] of Object.entries(staffTotals)) {
+                msg += `👤 *${person}:* ${formatMoney(total)}\n`;
+            }
+
+            msg += `------------------\n*Detaylar:*\n`;
+            db.dailyStats.log.slice(0, 15).forEach(l => {
+                msg += `🔹 ${l.staff}: ${l.name} (${l.qty} Ad) - ${formatMoney(l.total)}\n`;
+            });
+
             window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         function shareProductWhatsapp() {
             const p = db.products[currentId];
-            let msg = `📦 *Ürün Bilgisi*\n\n*Ürün:* ${p.name}\n*Fiyat:* ${formatMoney(p.price)}\n*Stok:* ${p.stock} Adet\n*Ölçü:* ${p.size} ${p.unit}`;
-            if(p.extraLabel) msg += `\n*${p.extraLabel}:* ${p.extraValue}`;
+            let msg = `📦 *Ürün Bilgisi*\n*Ürün:* ${p.name}\n*Fiyat:* ${formatMoney(p.price)}\n*Stok:* ${p.stock}\n*Ölçü:* ${p.size} ${p.unit}`;
             window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
@@ -547,24 +555,14 @@
         }
 
         function closeModal() { document.getElementById('confirm-modal').classList.add('hidden'); }
-        function togglePriceMenu() { document.getElementById('price-menu').classList.toggle('hidden'); }
-        
-        async function applyBulkPrice(pct) {
-            if(!confirm(`Tüm fiyatlar %${pct} değişecek?`)) return;
-            togglePriceMenu(); showStatus("İşleniyor...");
-            for (let k in db.products) { let p = db.products[k]; p.price = parseFloat((p.price * (1 + pct/100)).toFixed(2)); }
-            await saveToCloud(); if(currentId) showProductPage();
-        }
-
         function showStatus(msg, load) { const el = document.getElementById('status-box'); el.innerText = msg; el.style.opacity = "1"; if(!load) setTimeout(() => el.style.opacity = "0", 2000); }
+        function formatMoney(val) { return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(val).replace('₺', '') + '₺'; }
         
         function goHome() { 
             document.querySelectorAll('[id$="-page"]').forEach(el => el.classList.add('hidden'));
             document.getElementById('scan-page').classList.remove('hidden');
-            currentId = null;
-            if(isCameraRunning) toggleCamera();
+            currentId = null; if(isCameraRunning) toggleCamera();
             syncFromCloud();
-            updateDashboardStats();
         }
 
         function showListPage() {
@@ -582,16 +580,7 @@
                     const d = document.createElement('div');
                     const isCritical = p.stock < 3; 
                     d.className = `bg-gray-800 p-4 rounded-xl border ${isCritical ? 'critical-stock' : 'border-gray-700'} flex justify-between items-center`;
-                    const unit = p.unit || '';
-                    const size = p.size || '';
-                    d.innerHTML = `
-                        <div onclick="findProduct('${k}')" class="flex-1 cursor-pointer">
-                            <div class='font-bold text-white'>${p.name}</div>
-                            <div class='text-xs text-gray-500'>${size} ${unit}</div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class='text-right mr-2'><div class='${isCritical ? 'text-red-500' : 'text-yellow-500'} font-bold'>${p.stock} <span class="text-[10px] text-gray-400">ADT</span></div><div class='text-green-400 text-xs'>${formatMoney(p.price)}</div></div>
-                        </div>`;
+                    d.innerHTML = `<div onclick="findProduct('${k}')" class="flex-1 cursor-pointer"><div class='font-bold text-white'>${p.name}</div><div class='text-xs text-gray-500'>${p.size||0} ${p.unit||''}</div></div><div class='text-right mr-2'><div class='${isCritical ? 'text-red-500' : 'text-yellow-500'} font-bold'>${p.stock} <span class="text-[10px] text-gray-400">ADT</span></div><div class='text-green-400 text-xs'>${formatMoney(p.price)}</div></div>`;
                     c.appendChild(d);
                 }
             });
