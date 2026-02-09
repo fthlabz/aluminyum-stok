@@ -19,6 +19,16 @@
       "unit": "CM",
       "extraLabel": "Cinsi",
       "extraValue": "U profil"
+    },
+    "URUN-214462-75144": {
+      "offcuts": [],
+      "name": "Kanvas profil ",
+      "price": 250,
+      "stock": 100,
+      "size": 270,
+      "unit": "CM",
+      "extraLabel": "Deneme",
+      "extraValue": "Olur öyle"
     }
   },
   "dailyStats": {
