@@ -1,10 +1,12 @@
 {
   "products": {
     "URUN-214462-65183": {
-      "offcuts": [],
+      "offcuts": [
+        2
+      ],
       "name": "Saray halı",
       "price": 5750,
-      "stock": 99,
+      "stock": 98,
       "size": 6,
       "unit": "M²",
       "extraLabel": "Cinsi",
