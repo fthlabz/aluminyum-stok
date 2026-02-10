@@ -19,36 +19,21 @@
       "unit": "KG",
       "extraLabel": "Skt",
       "extraValue": "11.08.2027"
+    },
+    "URUN-536063-65751": {
+      "offcuts": [],
+      "name": "Kent rang blue",
+      "price": 100,
+      "stock": 50,
+      "size": 0,
+      "unit": "M²",
+      "extraLabel": "",
+      "extraValue": ""
     }
   },
   "dailyStats": {
-    "date": "9.02.2026",
-    "ciro": 118750,
-    "log": [
-      {
-        "name": "Enes zeytin gold",
-        "qty": 5,
-        "total": 23750,
-        "staff": "Ms"
-      },
-      {
-        "name": "Enes zeytin gold",
-        "qty": 10,
-        "total": 47500,
-        "staff": "Ali"
-      },
-      {
-        "name": "Enes zeytin gold",
-        "qty": 5,
-        "total": 23750,
-        "staff": "Fth"
-      },
-      {
-        "name": "Enes zeytin gold",
-        "qty": 5,
-        "total": 23750,
-        "staff": "Fth"
-      }
-    ]
+    "date": "10.02.2026",
+    "ciro": 0,
+    "log": []
   }
 }
