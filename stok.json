@@ -36,7 +36,7 @@
       ],
       "name": "Zeytin",
       "price": 4500,
-      "stock": 99,
+      "stock": 97,
       "size": 18,
       "unit": "KG",
       "extraLabel": "Skt",
@@ -45,8 +45,14 @@
   },
   "dailyStats": {
     "date": "10.02.2026",
-    "ciro": 500,
+    "ciro": 9500,
     "log": [
+      {
+        "name": "Zeytin",
+        "qty": 2,
+        "total": 9000,
+        "staff": "545454"
+      },
       {
         "name": "Kent rang blue",
         "qty": 5,
